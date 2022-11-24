@@ -1,0 +1,14 @@
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr 9fr;
+  height: 100%;
+}
+
+.tags__container {
+  background-color: black;
+  color: white
+}
+
+.grid__item {
+  padding: 20px;
+}
