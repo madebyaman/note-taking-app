@@ -1,14 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+body {
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+p {
+  font-size: 17px;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 2fr 3fr 9fr;
   height: 100%;
 }
 
-.tags__container {
-  background-color: black;
-  color: white
+button.icon {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font-size: 17px;
 }
 
-.grid__item {
+/*
+===================================
+Tags Container
+===================================
+*/
+
+.tags__container {
+  background-color: #2e3235;
+  color: white;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.grid__item.tags__container,
+.notes__container-notes,
+.notes__container-header {
   padding: 20px;
+}
+
+.icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notes li {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+  padding: 5px 2px;
+  align-items: center;
+}
+
+/* Notebooks Section */
+.notebooks-section__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.notebooks-section__heading .notebooks__icon svg {
+  width: 14px;
+  height: 14px;
+  opacity: 60%;
+}
+
+.notebooks-section__heading .add-notebook {
+  margin-left: auto;
+}
+
+.gear.icon {
+margin-top: auto;
+}
+
+.gear.icon svg {
+width: 22px;
+height: 22px;
+}
+
+/*
+===================================
+Notes Container
+===================================
+*/
+
+.notes__container {
+  border-right: 1px solid #dedede;
+  background-color: #fbfbfb;
+}
+
+.notes__container-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border-bottom: 1px solid #dedede;
+}
+
+.notes__container-header input {
+  width: 100%;
+  display: block;
+  border: 1px solid #cacaca;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.notes__container-header input:focus {
+  outline: none;
+}
+
+.notes__container-new-note-icon svg {
+  width: 30px;
+  height: 30px;
+  color: #9fa0a0;
 }
