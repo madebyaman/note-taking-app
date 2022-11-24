@@ -8,17 +8,53 @@ p {
   font-size: 17px;
 }
 
+input {
+  width: 100%;
+  display: block;
+  border: 1px solid #cacaca;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 2fr 3fr 9fr;
   height: 100%;
 }
 
-button.icon {
+button.icon,
+.notes li > button,
+.notebook > button {
   background-color: transparent;
   border: none;
   padding: 0;
   font-size: 17px;
+  cursor: pointer;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.gear.icon,
+.notes__container-notes,
+.notes__container-header,
+.notes-browser__preview,
+.notes-browser__empty,
+.notes-browser__editor {
+  padding: 20px;
+}
+
+.icon.gray svg {
+  opacity: 40%;
 }
 
 /*
@@ -33,16 +69,18 @@ Tags Container
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
 }
 
-.grid__item.tags__container,
-.notes__container-notes,
-.notes__container-header,
-.notes-browser__preview,
-.notes-browser__empty,
-.notes-browser__editor {
-  padding: 20px;
+.tags__container .notes {
+  margin-top: 20px;
+}
+
+.tags__container .notes button,
+.notebooks-section__heading,
+li.notebook > button {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 .icon svg {
@@ -50,21 +88,41 @@ Tags Container
   height: 17px;
 }
 
-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
 
-.notes li {
+.notes li > button,
+.notebook > button {
   display: flex;
   gap: 5px;
   margin-bottom: 5px;
   padding: 5px 2px;
   align-items: center;
+  width: 100%;
+}
+
+.notes li > button:hover,
+.notes li > button:focus,
+.notebook > button:focus,
+.notebook > button:hover {
+  background-color: hsl(206, 4%, 29%);
+}
+
+.notes li > button.active {
+  background-color: #dd433d;
+}
+
+.notes li > button.active .icon.gray svg {
+  opacity: 100%;
 }
 
 /* Notebooks Section */
+.notebooks-section.hide ul.note-books {
+  display: none;
+}
+
+.notebooks-section.hide .notebooks__icon svg {
+  transform: rotate(180deg);
+}
+
 .notebooks-section__heading {
   display: flex;
   align-items: center;
@@ -76,12 +134,34 @@ ul {
 .notebooks-section__heading .notebooks__icon svg {
   width: 14px;
   height: 14px;
-  opacity: 60%;
 }
 
 .notebooks-section__heading .add-notebook {
   margin-left: auto;
 }
+
+.notebook > button {
+  margin-top: 8px;
+}
+
+.new-notebook-input {
+  margin: 10px 20px 0 20px;
+  width: auto;
+  border-radius: 2px;
+  border: 0px;
+  color: inherit;
+  background-color: hsl(206, 4%, 39%);
+}
+
+.new-notebook-input.hide {
+  display: none;
+}
+
+.new-notebook-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Settings */
 
 .gear.icon {
 margin-top: auto;
@@ -111,18 +191,6 @@ Notes Container
   border-bottom: 1px solid #dedede;
 }
 
-.notes__container-header input {
-  width: 100%;
-  display: block;
-  border: 1px solid #cacaca;
-  border-radius: 5px;
-  padding: 5px 10px;
-  font-size: 14px;
-}
-
-.notes__container-header input:focus {
-  outline: none;
-}
 
 .notes__container-new-note-icon svg {
   width: 30px;
