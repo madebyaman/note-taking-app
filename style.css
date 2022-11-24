@@ -8,6 +8,29 @@ p {
   font-size: 17px;
 }
 
+h1,
+h2,
+h3,
+h4 {
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 35px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 25px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
 input {
   width: 100%;
   display: block;
@@ -45,7 +68,7 @@ ul {
 }
 
 .gear.icon,
-.notes__container-notes,
+.notes__container-note,
 .notes__container-header,
 .notes-browser__preview,
 .notes-browser__empty,
@@ -196,6 +219,42 @@ Notes Container
   width: 30px;
   height: 30px;
   color: #9fa0a0;
+}
+
+.notes__container-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notes__container-note {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-bottom: 1px solid #dedede;
+  transition: all 200ms ease-out;
+}
+
+.notes__container-note:hover {
+  background-color: #eee;
+}
+
+.notes__container-note.active {
+  background-color: #dd433d;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.notes__container-note .notes__container-note-category {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+}
+
+.notes__container-note-category {
+  opacity: 60%;
+  font-size: 15px;
 }
 
 /*
