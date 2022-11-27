@@ -1,10 +1,4 @@
-import marked from 'marked'
-
-async function getLocalNotes(url) {
-  const res = await fetch(url)
-  const notes = await res.json()
-  return notes
-}
+import snarkdown from 'snarkdown'
 
 function getTitleFromNote(note) {
   const title = note.split('\n')[0]
@@ -72,7 +66,7 @@ function removeClassFromNodes(nodes, className) {
 
 function returnPreview(notes, id) {
   const activeNote = notes.find((note) => note.id === id)
-  return marked.parse(activeNote.note)
+  return snarkdown(activeNote.note)
 }
 
 function renderPreview(html) {
