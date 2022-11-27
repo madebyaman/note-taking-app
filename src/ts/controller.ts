@@ -4,6 +4,10 @@ import notesView from './views/notesView'
 import noteView from './views/noteView'
 import snarkdown from 'snarkdown'
 
+if (module.hot) {
+  module.hot.accept()
+}
+
 export function onClickNote(e: Event): void {
   if (e.target instanceof Element) {
     const closestNote = e.target.closest('.notes__container-note')
@@ -13,13 +17,14 @@ export function onClickNote(e: Event): void {
       notesView.removeActiveClass()
       // show nothing in note view
       noteView.render()
+    } else {
+      // render note view
+      renderNoteView(id)
+      // remove active class from other notes
+      notesView.removeActiveClass()
+      // add active class to this note
+      closestNote?.classList.add('active')
     }
-    // render note view
-    renderNoteView(id)
-    // remove active class from other notes
-    notesView.removeActiveClass()
-    // add active class to this note
-    closestNote?.classList.add('active')
   }
 }
 

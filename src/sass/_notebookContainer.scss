@@ -1,0 +1,114 @@
+/*
+===================================
+Notebook Container
+===================================
+*/
+
+.tags__container {
+  background-color: #2e3235;
+  color: white;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.tags__container .notes {
+  margin-top: 20px;
+}
+
+.tags__container .notes button,
+.notebooks-section__heading,
+li.notebook > button {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+
+.notes li > button,
+.notebook > button {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+  padding: 5px 2px;
+  align-items: center;
+  width: 100%;
+}
+
+.notes li > button:hover,
+.notes li > button:focus,
+.notebook > button:focus,
+.notebook > button:hover {
+  background-color: hsl(206, 4%, 29%);
+}
+
+.notes li > button.active {
+  background-color: #dd433d;
+}
+
+.notes li > button.active .icon.gray svg {
+  opacity: 100%;
+}
+
+/* Notebooks Section */
+.notebooks-section.hide ul.note-books {
+  display: none;
+}
+
+.notebooks-section.hide .notebooks__icon svg {
+  transform: rotate(180deg);
+}
+
+.notebooks-section__heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.notebooks-section__heading .notebooks__icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.notebooks-section__heading .add-notebook {
+  margin-left: auto;
+}
+
+.notebook > button {
+  margin-top: 8px;
+}
+
+.new-notebook-input {
+  margin: 10px 20px 0 20px;
+  width: auto;
+  border-radius: 2px;
+  border: 0px;
+  color: inherit;
+  background-color: hsl(206, 4%, 39%);
+}
+
+.new-notebook-input.hide {
+  display: none;
+}
+
+.new-notebook-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Settings */
+
+.gear.icon {
+margin-top: auto;
+}
+
+.gear.icon svg {
+width: 22px;
+height: 22px;
+}

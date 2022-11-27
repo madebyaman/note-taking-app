@@ -1,0 +1,31 @@
+/*
+===================================
+Notes Editor
+===================================
+*/
+
+.notes-browser__editor {
+  width: 100%;
+  display: block;
+  font-size: 17px;
+  border: 0;
+  height: 100%;
+}
+
+.notes-browser__empty img {
+  height: 350px;
+  width: 350px;
+  opacity: 50%;
+}
+
+.notes-browser__empty {
+  display: grid;
+  height: 100%;
+  margin: 0;
+  place-items: center center;
+}
+
+.notes-browser__empty p {
+  text-align: center;
+  margin-top: 20px;
+}
