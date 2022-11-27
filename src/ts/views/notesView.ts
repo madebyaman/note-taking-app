@@ -4,8 +4,15 @@ import { Note as Notetype } from '../types'
 class NotesView extends Note<Notetype[]> {
   _parentElement = document.querySelector('.notes__container-notes')
 
-  addHandler(handler: (e: Event) => void) {
+  addHandler(handler: (ev: Event) => void) {
     this._parentElement?.addEventListener('click', (e) => handler(e))
+  }
+
+  removeActiveClass() {
+    const notes = document.querySelectorAll('.notes__container-note')
+    notes.forEach((note) => {
+      note.classList.remove('active')
+    })
   }
 
   render(data: Notetype[]) {
