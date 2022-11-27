@@ -4,9 +4,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css">
-    <link rel="stylesheet" href="./style.css" />
-    <title>Polar Bear App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css" />
+    <link rel="stylesheet" href="src/sass/main.scss" />
+    <title>Easy Notes</title>
   </head>
   <body>
     <div class="grid">
@@ -69,8 +75,7 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                  />
-                </svg></span
+                  /></svg></span
               ><span class="notes__title">Trash</span>
             </button>
           </li>
@@ -136,7 +141,12 @@
               </button>
             </li>
           </ul>
-            <input class="new-notebook-input hide" type="text" name="new-notebook-test" placeholder="Notebook Name" />
+          <input
+            class="new-notebook-input hide"
+            type="text"
+            name="new-notebook-test"
+            placeholder="Notebook Name"
+          />
         </div>
 
         <!-- Gear icon -->
@@ -219,7 +229,7 @@
         <div class="notes-browser__empty">
           <div>
             <img
-              src="./empty-note.svg"
+              src="./src/img/empty-note.svg"
               alt="An illustration of note with no content"
             />
             <p>Select a note to view</p>
@@ -228,7 +238,6 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="./script.js" type="module"></script>
+    <script src="./src/ts/controller.ts" type="module"></script>
   </body>
 </html>

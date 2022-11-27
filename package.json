@@ -1,0 +1,33 @@
+{
+  "name": "note-taking-app",
+  "version": "1.0.0",
+  "description": "A note taking app like Evernote and Bear",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madebyaman/note-taking-app.git"
+  },
+  "keywords": [
+    "js",
+    "scss"
+  ],
+  "author": "Aman Thakur",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/madebyaman/note-taking-app/issues"
+  },
+  "homepage": "https://github.com/madebyaman/note-taking-app#readme",
+  "devDependencies": {
+    "@types/marked": "^4.0.7",
+    "parcel": "^2.8.0",
+    "prettier": "^2.8.0",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "@parcel/transformer-sass": "^2.8.0",
+    "marked": "^4.2.3"
+  }
+}
