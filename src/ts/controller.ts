@@ -52,7 +52,12 @@ export function onClickNote(e: Event): void {
 function renderEditorView(id: string) {
   const note = state.notes.find((note) => note.id === id)
   if (note) {
-    noteView.render({ type: 'RENDER_EDITOR', data: note.text })
+    noteView.render({
+      type: 'RENDER_EDITOR',
+      data: note.text,
+      id: note.id,
+      favorite: this.favorite,
+    })
     noteView.loadMdEditor()
   }
 }
@@ -60,7 +65,12 @@ function renderEditorView(id: string) {
 function renderNoteView(id: string): void {
   const note = state.notes.find((note) => note.id === id)
   if (note) {
-    noteView.render({ type: 'RENDER_PREVIEW', data: snarkdown(note.text) })
+    noteView.render({
+      type: 'RENDER_PREVIEW',
+      data: snarkdown(note.text),
+      id: note.id,
+      favorite: this.favorite,
+    })
   }
 }
 
