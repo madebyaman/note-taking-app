@@ -1,11 +1,37 @@
-import { loadNotes, state } from './model'
+import { addNewNoteToState, loadNotes, state } from './model'
 import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
 import snarkdown from 'snarkdown'
+import { v4 } from 'uuid'
+import { NoteWithoutTitleAndNotebook } from './types'
 
 if (module.hot) {
   module.hot.accept()
+}
+
+function showNote({
+  id,
+  type,
+}: {
+  id: string
+  type: 'RENDER_PREVIEW' | 'RENDER_EDITOR'
+}) {
+  const note = document.querySelector(`article[data-noteid="${id}"]`)
+  if (!note) {
+    console.log('No note found to show')
+    return
+  } else {
+    notesView.removeActiveClass()
+    note.classList.add('active')
+    if (type === 'RENDER_EDITOR') {
+      // Editor view
+      renderEditorView(id)
+    } else {
+      // preview
+      renderNoteView(id)
+    }
+  }
 }
 
 export function onClickNote(e: Event): void {
@@ -16,22 +42,24 @@ export function onClickNote(e: Event): void {
       // remove active class
       notesView.removeActiveClass()
       // show nothing in note view
-      noteView.render()
+      noteView.render({ type: 'RENDER_EMPTY' })
     } else {
-      // render note view
-      renderNoteView(id)
-      // remove active class from other notes
-      notesView.removeActiveClass()
-      // add active class to this note
-      closestNote?.classList.add('active')
+      showNote({ id: id, type: 'RENDER_PREVIEW' })
     }
+  }
+}
+
+function renderEditorView(id: string) {
+  const note = state.notes.find((note) => note.id === id)
+  if (note) {
+    noteView.render({ type: 'RENDER_EDITOR', data: note.text })
   }
 }
 
 function renderNoteView(id: string): void {
   const note = state.notes.find((note) => note.id === id)
   if (note) {
-    noteView.render(snarkdown(note.text))
+    noteView.render({ type: 'RENDER_PREVIEW', data: snarkdown(note.text) })
   }
 }
 
@@ -43,5 +71,24 @@ function init(): void {
   notesView.render(state.notes)
   // 3. Event handler in notes.
   notesView.addHandler(onClickNote)
+  // 4. Event handler for new note
+  notesView.addHandlerForNewNote(addNewNote)
 }
 init()
+
+function addNewNote(): void {
+  // 2. Create new note and open it in Editor view
+  const newNote: NoteWithoutTitleAndNotebook = {
+    id: v4(),
+    text: '',
+    notebookId: '',
+    favorite: false,
+    createdDate: new Date(Date.now()).toISOString(),
+  }
+  // 2. Add the note to state
+  addNewNoteToState(newNote)
+  // 3. Rerender notesView
+  notesView.render(state.notes)
+  // 4. Open note in note editor
+  showNote({ id: newNote.id, type: 'RENDER_EDITOR' })
+}

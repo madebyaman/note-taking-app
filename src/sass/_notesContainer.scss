@@ -19,13 +19,13 @@ Notes Container
     margin: 0;
   }
 
-  .notes__container-new-note-icon {
+  .add-new-note {
     margin-top: 12px;
   }
 }
 
 
-.notes__container-new-note-icon svg {
+.add-new-note svg {
   width: 30px;
   height: 30px;
   color: #9fa0a0;
@@ -34,7 +34,6 @@ Notes Container
 .notes__container-notes {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 .notes__container-note {

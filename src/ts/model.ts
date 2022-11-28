@@ -52,3 +52,12 @@ export function loadNotes(props?: {
     state.notes = newNotes
   }
 }
+
+export function addNewNoteToState(note: NoteWithoutTitleAndNotebook): void {
+  const newNote = {
+    title: '',
+    notebook: 'Notes',
+    ...note,
+  }
+  state.notes.push(newNote)
+}

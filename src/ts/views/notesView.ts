@@ -4,6 +4,10 @@ import { Note as Notetype } from '../types'
 class NotesView extends Note<Notetype[]> {
   _parentElement = document.querySelector('.notes__container-notes')
 
+  addHandlerForNewNote(handler: () => void) {
+    document.querySelector('.add-new-note')?.addEventListener('click', handler)
+  }
+
   addHandler(handler: (ev: Event) => void) {
     this._parentElement?.addEventListener('click', (e) => handler(e))
   }
@@ -33,7 +37,7 @@ class NotesView extends Note<Notetype[]> {
   #generateNotesMarkup(note: Notetype) {
     return `
           <article data-noteId="${note.id}" class="notes__container-note">
-            <h4>${note.title}</h4>
+            <h4>${note.title ? note.title : 'New Note'}</h4>
             <div class="notes__container-note-category">
               <span class="icon">
                   <svg
