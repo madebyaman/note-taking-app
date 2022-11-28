@@ -8,7 +8,7 @@
   align-self: start;
 }
 
-.tags__container,
+.notebook__container,
 .notes__container {
   position: fixed;
   height: 100vh;
@@ -20,35 +20,4 @@
   display: grid;
   grid-template-columns: 250px 1fr;
   grid-gap: 1rem;
-}
-
-.notes-browser {}
-
-ul:not(.notes-browser ul) {
-  margin: 0;
-  list-style: none;
-}
-
-button.icon,
-.notes li > button,
-.notebook > button {
-  background-color: red;
-  border: none;
-  padding: 0;
-  font-size: 17px;
-  cursor: pointer;
-  color: inherit;
-}
-
-.gear.icon,
-.notes__container-note,
-.notes__container-header,
-.notes-browser__preview,
-.notes-browser__empty,
-.notes-browser__editor {
-  padding: 20px;
-}
-
-.icon.gray svg {
-  opacity: 40%;
 }

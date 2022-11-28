@@ -1,0 +1,42 @@
+ul:not(.notes-browser ul) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li:not(.notes-browser li) {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  font-weight: normal;
+}
+
+button.icon,
+.notes li > button,
+.notebook > button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font-size: 17px;
+  cursor: pointer;
+  color: inherit;
+  border-radius: 0;
+}
+
+.gear.icon,
+.notes-browser__preview,
+.notes-browser__empty,
+.notes-browser__editor {
+  padding: 20px;
+}
+
+.notes__container-note,
+.notes__container-header {
+  padding: 10px;
+}
+
+.icon.gray svg {
+  opacity: 40%;
+}

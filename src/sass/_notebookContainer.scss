@@ -4,7 +4,7 @@ Notebook Container
 ===================================
 */
 
-.tags__container {
+.notebook__container {
   background-color: #2e3235;
   color: white;
   display: flex;
@@ -13,11 +13,11 @@ Notebook Container
   gap: 25px;
 }
 
-.tags__container .notes {
+.notebook__container .notes {
   margin-top: 20px;
 }
 
-.tags__container .notes button,
+.notebook__container .notes button,
 .notebooks-section__heading,
 li.notebook > button {
   padding-left: 20px;
@@ -34,21 +34,24 @@ li.notebook > button {
 .notebook > button {
   display: flex;
   gap: 5px;
-  margin-bottom: 5px;
-  padding: 5px 2px;
+  margin-bottom: 3px;
+  padding: 8px 4px;
   align-items: center;
   width: 100%;
 }
 
 .notes li > button:hover,
-.notes li > button:focus,
-.notebook > button:focus,
 .notebook > button:hover {
   background-color: hsl(206, 4%, 29%);
+  font-weight: normal;
 }
 
 .notes li > button.active {
-  background-color: #dd433d;
+  background-color: var(--color-link);
+
+  &:hover {
+    background-color: var(--color-link);
+  }
 }
 
 .notes li > button.active .icon.gray svg {
@@ -82,7 +85,7 @@ li.notebook > button {
 }
 
 .notebook > button {
-  margin-top: 8px;
+  margin-top: 0;
 }
 
 .new-notebook-input {
