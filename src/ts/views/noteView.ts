@@ -1,5 +1,6 @@
 import Note from './Note'
 import svg from '../../img/empty-note.svg'
+import snarkdown from 'snarkdown'
 
 type Render =
   | {
@@ -29,11 +30,17 @@ class NoteView extends Note<string> {
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
   }
 
+  loadMdEditor() {
+    const textare = document.querySelector('#notes-editor')
+    textare?.addEventListener('blur', (e) => {
+      const value = e.target.value
+      this.render({ type: 'RENDER_PREVIEW', data: snarkdown(value) })
+    })
+  }
+
   #generateEditorMarkup() {
     return `
-          <textarea class="notes-browser__editor" id="notes-editor" cols="33" rows="5">
-          ${this._data}
-        </textarea>
+      <textarea class="notes-browser__editor" id="notes-editor">${this._data}</textarea>
     `
   }
 

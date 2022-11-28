@@ -53,6 +53,7 @@ function renderEditorView(id: string) {
   const note = state.notes.find((note) => note.id === id)
   if (note) {
     noteView.render({ type: 'RENDER_EDITOR', data: note.text })
+    noteView.loadMdEditor()
   }
 }
 
