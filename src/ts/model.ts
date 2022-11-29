@@ -5,11 +5,13 @@ import { Note, Notebook, NoteWithoutTitleAndNotebook } from './types'
 interface StateProps {
   notes: Note[]
   notebooks: Notebook[]
+  trashedNotes: Note[]
 }
 
 export let state: StateProps = {
   notes: [],
   notebooks: [],
+  trashedNotes: [], // Don't sync this with local storage
 }
 
 function getTitleOfNote(md: string): string {
@@ -87,6 +89,21 @@ export function starNote(id: string) {
 }
 
 export function deleteNote(id: string) {
-  const newNotes = state.notes.filter((note) => note.id !== id)
+  const newNotes = state.notes.filter((note) => {
+    if (note.id === id) {
+      state.trashedNotes.push(note)
+      return false
+    } else {
+      return true
+    }
+  })
   state.notes = newNotes
+}
+
+export function showFavoriteNotes() {
+  return state.notes.filter((note) => note.favorite)
+}
+
+export function showNotesFromNotebook(id: string) {
+  return state.notes.filter((note) => note.id === id)
 }

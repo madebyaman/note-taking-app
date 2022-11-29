@@ -2,7 +2,7 @@ import Note from './Note'
 import svg from '../../img/empty-note.svg'
 import marked from 'marked'
 
-type Render =
+type NoteProps =
   | {
       type: 'RENDER_EMPTY'
     }
@@ -171,7 +171,7 @@ class NoteView extends Note<string> {
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
   }
 
-  render(props: Render) {
+  render(props: NoteProps) {
     this.#type = props.type
     if (props.type === 'RENDER_EMPTY') {
       this.#renderEmpty()

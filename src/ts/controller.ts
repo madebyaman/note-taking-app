@@ -3,12 +3,14 @@ import {
   deleteNote,
   loadNotes,
   saveNotes,
+  showFavoriteNotes,
   starNote,
   state,
 } from './model'
 import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
+import categoryView from './views/categoryView'
 import { v4 } from 'uuid'
 import { NoteWithoutTitleAndNotebook } from './types'
 
@@ -16,18 +18,17 @@ if (module.hot) {
   module.hot.accept()
 }
 
-function showNote({
-  id,
-  type,
-}: {
-  id: string
-  type: 'RENDER_PREVIEW' | 'RENDER_EDITOR' | 'RENDER_EMPTY'
-}) {
-  if (type === 'RENDER_EMPTY') {
+type ShowNoteProps =
+  | { type: 'RENDER_EMPTY' }
+  | { type: 'RENDER_EDITOR' | 'RENDER_PREVIEW'; id: string }
+
+function showNote(props: ShowNoteProps) {
+  if (props.type === 'RENDER_EMPTY') {
     notesView.removeActiveClass()
     noteView.render({ type: 'RENDER_EMPTY' })
     return
   }
+  const { type, id } = props
   notesView.removeActiveClass()
   notesView.addActiveClassToNote(id)
   if (type === 'RENDER_EDITOR') {
@@ -92,6 +93,10 @@ function init(): void {
   notesView.addHandler(onClickNote)
   // 4. Event handler for new note
   notesView.addHandlerForNewNote(addNewNote)
+  // 5. Event handlers for category
+  categoryView.addEventHandlerToFavorite(favoriteCategoryController)
+  categoryView.addEventHandlerToNotes(allNotesController)
+  categoryView.addEventHandlerToTrash(trashedNotesController)
 }
 init()
 
@@ -116,7 +121,7 @@ function deleteNoteController(id: string) {
   deleteNote(id)
   // Re render note view
   notesView.render(state.notes)
-  showNote({ type: 'RENDER_EMPTY', id: id })
+  showNote({ type: 'RENDER_EMPTY' })
 }
 
 function favoriteNoteController(id: string) {
@@ -128,4 +133,21 @@ function favoriteNoteController(id: string) {
   if (note) {
     noteView.renderStarIcon(note.favorite)
   }
+}
+
+function favoriteCategoryController() {
+  const notes = showFavoriteNotes()
+  // Re-render views
+  notesView.render(notes)
+  showNote({ type: 'RENDER_EMPTY' })
+}
+
+function allNotesController() {
+  notesView.render(state.notes)
+  showNote({ type: 'RENDER_EMPTY' })
+}
+
+function trashedNotesController() {
+  notesView.render(state.trashedNotes)
+  showNote({ type: 'RENDER_EMPTY' })
 }

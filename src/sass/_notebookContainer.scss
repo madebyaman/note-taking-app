@@ -46,7 +46,7 @@ li.notebook > button {
   font-weight: normal;
 }
 
-.notes li > button.active {
+.notes .category.active {
   background-color: var(--color-link);
 
   &:hover {
