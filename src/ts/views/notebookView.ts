@@ -13,6 +13,63 @@ class NotebookView extends Note<Notebook[]> {
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
   }
 
+  addEventHandler(handler: (id: string) => void) {
+    const allNotebooks = document.querySelectorAll('.notebook')
+    allNotebooks.forEach((notebook) => {
+      const id = notebook.getAttribute('data-notebookid')
+      if (!id) {
+        return console.error('ID not found for the notebook', notebook)
+      }
+      notebook.addEventListener('click', () => {
+        this.#removeActiveClass()
+        notebook.classList.add('active')
+        handler(id)
+      })
+    })
+  }
+
+  addEventHandlerToNotes(handler: () => void) {
+    const notesCategory = document.querySelector('li.category-notes')
+    if (notesCategory) {
+      notesCategory.addEventListener('click', () => {
+        this.#removeActiveClass()
+        notesCategory.classList.add('active')
+        handler()
+      })
+    }
+  }
+
+  addEventHandlerToFavorite(handler: () => void) {
+    const favoriteCategory = document.querySelector('li.category-favorite')
+    if (favoriteCategory) {
+      favoriteCategory.addEventListener('click', () => {
+        this.#removeActiveClass()
+        favoriteCategory.classList.add('active')
+        handler()
+      })
+    }
+  }
+
+  addEventHandlerToTrash(handler: () => void) {
+    const trashCategory = document.querySelector('li.category-trash')
+    if (trashCategory) {
+      trashCategory.addEventListener('click', () => {
+        this.#removeActiveClass()
+        trashCategory.classList.add('active')
+        handler()
+      })
+    }
+  }
+
+  #removeActiveClass() {
+    const category = document.querySelectorAll('.category')
+    category.forEach((cat) => cat.classList.remove('active'))
+    const allNotebooks = document.querySelectorAll('.notebook')
+    allNotebooks.forEach((notebook) => {
+      notebook.classList.remove('active')
+    })
+  }
+
   #generateMarkup() {
     if (!this._data) return ''
     return this._data
@@ -22,7 +79,7 @@ class NotebookView extends Note<Notebook[]> {
 
   #generateNotebookMarkup({ id, name }: Notebook) {
     return `
-            <li class="notebook" data-notebookId="${id}">
+            <li class="notebook" data-notebookid="${id}">
               <button>
                 <span class="notebook__icon icon gray">
                   <svg

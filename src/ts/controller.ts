@@ -4,13 +4,13 @@ import {
   loadNotes,
   saveNotes,
   showFavoriteNotes,
+  showNotesFromNotebook,
   starNote,
   state,
 } from './model'
 import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
-import categoryView from './views/categoryView'
 import { v4 } from 'uuid'
 import { NoteWithoutTitleAndNotebook } from './types'
 
@@ -94,9 +94,11 @@ function init(): void {
   // 4. Event handler for new note
   notesView.addHandlerForNewNote(addNewNote)
   // 5. Event handlers for category
-  categoryView.addEventHandlerToFavorite(favoriteCategoryController)
-  categoryView.addEventHandlerToNotes(allNotesController)
-  categoryView.addEventHandlerToTrash(trashedNotesController)
+  notebookView.addEventHandlerToFavorite(favoriteCategoryController)
+  notebookView.addEventHandlerToNotes(allNotesController)
+  notebookView.addEventHandlerToTrash(trashedNotesController)
+  // 6. Event handler for notebook
+  notebookView.addEventHandler(notebookController)
 }
 init()
 
@@ -150,4 +152,13 @@ function allNotesController() {
 function trashedNotesController() {
   notesView.render(state.trashedNotes)
   showNote({ type: 'RENDER_EMPTY' })
+  // TODO Hide create note option in it.
+  // 2. Make an option to restore the note
+}
+
+function notebookController(id: string) {
+  const notes = showNotesFromNotebook(id)
+  notesView.render(notes)
+  showNote({ type: 'RENDER_EMPTY' })
+  // TODO when add new note option is clicked pass this id to it.
 }

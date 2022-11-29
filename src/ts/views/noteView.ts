@@ -31,13 +31,9 @@ class NoteView extends Note<string> {
     const textarea = document.getElementById('notes-editor')
     if (textarea instanceof HTMLTextAreaElement) {
       textarea?.addEventListener('input', (e) => {
-        // Debouncing
-        setTimeout(() => {
-          if (e.target instanceof HTMLTextAreaElement) {
-            this._data = e.target.value
-            console.log(e.target.value)
-          }
-        }, 1000)
+        if (e.target instanceof HTMLTextAreaElement) {
+          this._data = e.target.value
+        }
       })
     }
   }

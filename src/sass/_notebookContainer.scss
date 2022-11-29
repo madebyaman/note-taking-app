@@ -46,7 +46,8 @@ li.notebook > button {
   font-weight: normal;
 }
 
-.notes .category.active {
+.notes .category.active,
+.notebook.active {
   background-color: var(--color-link);
 
   &:hover {
@@ -103,15 +104,4 @@ li.notebook > button {
 
 .new-notebook-input::placeholder {
   color: rgba(255, 255, 255, 0.3);
-}
-
-/* Settings */
-
-.gear.icon {
-margin-top: auto;
-}
-
-.gear.icon svg {
-width: 22px;
-height: 22px;
 }
