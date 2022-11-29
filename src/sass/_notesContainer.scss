@@ -70,3 +70,12 @@ Notes Container
   opacity: 60%;
   font-size: 15px;
 }
+
+.notes-container__grid {
+  display: grid;
+  grid-template-columns: 1fr 8fr;
+
+  .notes-container__grid-item.icon {
+    margin-top: 12px;
+  }
+}

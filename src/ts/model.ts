@@ -61,3 +61,24 @@ export function addNewNoteToState(note: NoteWithoutTitleAndNotebook): void {
   }
   state.notes.push(newNote)
 }
+
+export function saveNotes() {
+  console.log('saving')
+}
+
+export function starNote(id: string) {
+  const newNotes = state.notes.map((note) => {
+    if (note.id === id) {
+      return {
+        ...note,
+        favorite: !note.favorite,
+      }
+    } else return note
+  })
+  state.notes = newNotes
+}
+
+export function deleteNote(id: string) {
+  const newNotes = state.notes.filter((note) => note.id !== id)
+  state.notes = newNotes
+}

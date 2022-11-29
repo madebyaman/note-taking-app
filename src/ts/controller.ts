@@ -1,4 +1,11 @@
-import { addNewNoteToState, loadNotes, state } from './model'
+import {
+  addNewNoteToState,
+  deleteNote,
+  loadNotes,
+  saveNotes,
+  starNote,
+  state,
+} from './model'
 import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
@@ -15,23 +22,26 @@ function showNote({
   type,
 }: {
   id: string
-  type: 'RENDER_PREVIEW' | 'RENDER_EDITOR'
+  type: 'RENDER_PREVIEW' | 'RENDER_EDITOR' | 'RENDER_EMPTY'
 }) {
-  const note = document.querySelector(`article[data-noteid="${id}"]`)
-  if (!note) {
-    console.log('No note found to show')
-    return
-  } else {
+  if (type === 'RENDER_EMPTY') {
     notesView.removeActiveClass()
-    note.classList.add('active')
-    if (type === 'RENDER_EDITOR') {
-      // Editor view
-      renderEditorView(id)
-    } else {
-      // preview
-      renderNoteView(id)
-    }
+    noteView.render({ type: 'RENDER_EMPTY' })
+    return
   }
+  notesView.removeActiveClass()
+  notesView.addActiveClassToNote(id)
+  if (type === 'RENDER_EDITOR') {
+    // Editor view
+    renderEditorView(id)
+  } else {
+    // preview
+    renderNoteView(id)
+  }
+  // 5. Event handlers to saving, deleting and toggling favorites
+  noteView.addDeleteHandler(deleteNoteController)
+  noteView.addSaveHandler(saveNotes)
+  noteView.addStarHandler(favoriteNoteController)
 }
 
 export function onClickNote(e: Event): void {
@@ -102,4 +112,22 @@ function addNewNote(): void {
   notesView.render(state.notes)
   // 4. Open note in note editor
   showNote({ id: newNote.id, type: 'RENDER_EDITOR' })
+}
+
+function deleteNoteController(id: string) {
+  deleteNote(id)
+  // Re render note view
+  notesView.render(state.notes)
+  showNote({ type: 'RENDER_EMPTY', id: id })
+}
+
+function favoriteNoteController(id: string) {
+  starNote(id)
+  // Re render views
+  notesView.render(state.notes)
+  notesView.addActiveClassToNote(id)
+  const note = state.notes.find((note) => note.id === id)
+  if (note) {
+    noteView.renderStarIcon(note.favorite)
+  }
 }
