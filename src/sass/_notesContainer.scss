@@ -79,3 +79,10 @@ Notes Container
     margin-top: 12px;
   }
 }
+
+.notes-editor {
+  resize: none;
+  border: 1px solid #eee;
+  box-sizing: border-box;
+  outline: none;
+}

@@ -9,7 +9,6 @@ import {
 import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
-import snarkdown from 'snarkdown'
 import { v4 } from 'uuid'
 import { NoteWithoutTitleAndNotebook } from './types'
 
@@ -68,7 +67,6 @@ function renderEditorView(id: string) {
       id: note.id,
       favorite: this.favorite,
     })
-    noteView.loadMdEditor()
   }
 }
 
@@ -77,7 +75,7 @@ function renderNoteView(id: string): void {
   if (note) {
     noteView.render({
       type: 'RENDER_PREVIEW',
-      data: snarkdown(note.text),
+      data: note.text,
       id: note.id,
       favorite: this.favorite,
     })

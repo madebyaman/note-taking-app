@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@parcel/transformer-sass": "^2.8.0",
-    "snarkdown": "^2.0.0",
+    "marked": "^0.3.6",
     "uuid": "^9.0.0"
   }
 }

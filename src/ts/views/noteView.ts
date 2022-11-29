@@ -1,5 +1,6 @@
 import Note from './Note'
 import svg from '../../img/empty-note.svg'
+import marked from 'marked'
 
 type Render =
   | {
@@ -17,9 +18,28 @@ class NoteView extends Note<string> {
   _id: string
   #type: 'RENDER_PREVIEW' | 'RENDER_EDITOR' | 'RENDER_EMPTY'
 
-  addSaveHandler(handler: () => void) {
+  addSaveHandler(handler: (val: string, id: string) => void) {
     const saveButton = document.querySelector('button.save')
-    saveButton?.addEventListener('click', handler)
+    if (saveButton) {
+      saveButton.addEventListener('click', () =>
+        handler(this._data || '', this._id)
+      )
+    }
+  }
+
+  #addInputHandlerToTextarea() {
+    const textarea = document.getElementById('notes-editor')
+    if (textarea instanceof HTMLTextAreaElement) {
+      textarea?.addEventListener('input', (e) => {
+        // Debouncing
+        setTimeout(() => {
+          if (e.target instanceof HTMLTextAreaElement) {
+            this._data = e.target.value
+            console.log(e.target.value)
+          }
+        }, 1000)
+      })
+    }
   }
 
   addStarHandler(handler: (id: string) => void) {
@@ -33,7 +53,6 @@ class NoteView extends Note<string> {
   }
 
   #toggleEditingMode() {
-    console.log(this.#type)
     if (this.#type === 'RENDER_PREVIEW') {
       // flip the mode
       this.#renderEditorMode()
@@ -141,6 +160,8 @@ class NoteView extends Note<string> {
     this.#renderPreviewOrCodeIcon()
     this._clear()
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
+    // Add event handler to editor
+    this.#addInputHandlerToTextarea()
   }
 
   #renderEmpty() {
@@ -197,7 +218,7 @@ class NoteView extends Note<string> {
 
   #generateEditorMarkup() {
     return `
-      <textarea class="notes-browser__editor" id="notes-editor">${
+      <textarea class="notes-editor" id="notes-editor" rows="30">${
         this._data || '# New Note'
       }</textarea>
     `
@@ -220,7 +241,7 @@ class NoteView extends Note<string> {
   #generateMarkup() {
     return `
       <div class="notes-browser__preview">
-        ${this._data}
+        ${marked(this._data || '', { sanitize: true })}
       </div>
     `
   }
