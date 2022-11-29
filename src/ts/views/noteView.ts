@@ -15,6 +15,7 @@ type Render =
 class NoteView extends Note<string> {
   _parentElement = document.querySelector('.notes-browser')
   _id: string
+  #type: 'RENDER_PREVIEW' | 'RENDER_EDITOR' | 'RENDER_EMPTY'
 
   addSaveHandler(handler: () => void) {
     const saveButton = document.querySelector('button.save')
@@ -29,6 +30,25 @@ class NoteView extends Note<string> {
   addDeleteHandler(handler: (id: string) => void) {
     const deleteButton = document.querySelector('button.delete')
     deleteButton?.addEventListener('click', () => handler(this._id))
+  }
+
+  #toggleEditingMode() {
+    console.log(this.#type)
+    if (this.#type === 'RENDER_PREVIEW') {
+      // flip the mode
+      this.#renderEditorMode()
+      this.#type = 'RENDER_EDITOR'
+    } else if (this.#type === 'RENDER_EDITOR') {
+      this.#renderPreviewMode()
+      this.#type = 'RENDER_PREVIEW'
+    }
+  }
+
+  #addEventHandlerToToggleEditingMode() {
+    const icon = document.querySelector('button.preview-editor')
+    if (icon) {
+      icon.addEventListener('click', () => this.#toggleEditingMode())
+    }
   }
 
   #renderIcons() {
@@ -87,12 +107,14 @@ class NoteView extends Note<string> {
     parentEl?.insertAdjacentHTML('afterbegin', iconMarkup)
   }
 
-  #renderPreviewOrCodeIcon(preview: boolean) {
+  #renderPreviewOrCodeIcon() {
     let markupIcon: string
-    if (preview) {
+    if (this.#type === 'RENDER_PREVIEW') {
       markupIcon = this.#previewIcon()
-    } else {
+    } else if (this.#type === 'RENDER_EDITOR') {
       markupIcon = this.#codeIcon()
+    } else {
+      throw new Error('Editor is empty')
     }
     const parentEl = document.querySelector('button.preview-editor')
     if (!parentEl) return
@@ -107,28 +129,43 @@ class NoteView extends Note<string> {
     }
   }
 
+  #renderPreviewMode() {
+    const markup = this.#generateMarkup()
+    this.#renderPreviewOrCodeIcon()
+    this._clear()
+    this._parentElement?.insertAdjacentHTML('afterbegin', markup)
+  }
+
+  #renderEditorMode() {
+    const markup = this.#generateEditorMarkup()
+    this.#renderPreviewOrCodeIcon()
+    this._clear()
+    this._parentElement?.insertAdjacentHTML('afterbegin', markup)
+  }
+
+  #renderEmpty() {
+    const markup = this.#renderEmptyMessage()
+    this.#clearIcons()
+    this._clear()
+    this._parentElement?.insertAdjacentHTML('afterbegin', markup)
+  }
+
   render(props: Render) {
-    let markup: string
+    this.#type = props.type
     if (props.type === 'RENDER_EMPTY') {
-      markup = this.#renderEmptyMessage()
-      this.#clearIcons()
+      this.#renderEmpty()
     } else {
       this.#renderIcons()
       this._data = props.data
       this._id = props.id
       this.renderStarIcon(props.favorite)
       if (props.type === 'RENDER_PREVIEW') {
-        markup = this.#generateMarkup()
-        this.#renderPreviewOrCodeIcon(true)
-        // Render preview icon
+        this.#renderPreviewMode()
       } else {
-        markup = this.#generateEditorMarkup()
-        this.#renderPreviewOrCodeIcon(false)
-        // render editor icon
+        this.#renderEditorMode()
       }
+      this.#addEventHandlerToToggleEditingMode()
     }
-    this._clear()
-    this._parentElement?.insertAdjacentHTML('afterbegin', markup)
   }
 
   #previewIcon() {
