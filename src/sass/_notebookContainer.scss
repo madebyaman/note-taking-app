@@ -4,6 +4,12 @@ Notebook Container
 ===================================
 */
 
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
 .notebook__container {
   background-color: #2e3235;
   color: white;
@@ -11,6 +17,11 @@ Notebook Container
   justify-content: flex-start;
   flex-direction: column;
   gap: 25px;
+
+
+  button.icon svg {
+    color:rgba(255, 255, 255, 0.7);
+  }
 }
 
 .notebook__container .notes {
@@ -18,10 +29,14 @@ Notebook Container
 }
 
 .notebook__container .notes button,
-.notebooks-section__heading,
-li.notebook > button {
+.notebooks-section__heading {
   padding-left: 20px;
   padding-right: 20px;
+}
+
+li.notebook {
+  padding-left: 20px;
+  padding-right: 13px;
 }
 
 .icon svg {
@@ -31,17 +46,21 @@ li.notebook > button {
 
 
 .notes li > button,
-.notebook > button {
+.notebook > .notebook__button {
   display: flex;
-  gap: 5px;
+  gap: 8px;
   margin-bottom: 3px;
   padding: 8px 4px;
   align-items: center;
   width: 100%;
 }
 
+.notebook__button svg {
+  margin-top: 4px;
+}
+
 .notes li > button:hover,
-.notebook > button:hover {
+.notebook:hover {
   background-color: hsl(206, 4%, 29%);
   font-weight: normal;
 }
@@ -104,4 +123,30 @@ li.notebook > button {
 
 .new-notebook-input::placeholder {
   color: rgba(255, 255, 255, 0.3);
+}
+
+.notebook {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  justify-content: space-between;
+  align-items: center;
+
+  button.icon {
+    display: none;
+    padding: 5px 7px;
+  }
+
+  button.icon:hover {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  &:hover button.icon {
+    display: inline;
+  }
+}
+
+ul.note-books {
+  margin-top: 15px;
 }

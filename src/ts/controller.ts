@@ -1,7 +1,9 @@
 import {
   addNewNoteToState,
   deleteNote,
+  deleteNotebook,
   loadNotes,
+  renameNotebook,
   saveNotes,
   showFavoriteNotes,
   showNotesFromNotebook,
@@ -99,6 +101,8 @@ function init(): void {
   notebookView.addEventHandlerToTrash(trashedNotesController)
   // 6. Event handler for notebook
   notebookView.addEventHandler(notebookController)
+  notebookView.addEditNotebookHandler(editNotebookController)
+  notebookView.addDeleteNotebookHandler(deleteNotebookController)
 }
 init()
 
@@ -161,4 +165,22 @@ function notebookController(id: string) {
   notesView.render(notes)
   showNote({ type: 'RENDER_EMPTY' })
   // TODO when add new note option is clicked pass this id to it.
+}
+
+function renameNotebookController(name: string, id: string) {
+  // call model function to rename the notebook
+  renameNotebook(name, id)
+  // re-render the notebook view
+  notebookView.render(state.notebooks)
+}
+
+function editNotebookController() {
+  notebookView.onRename(renameNotebookController)
+}
+
+function deleteNotebookController(id: string) {
+  // call model function to rename the notebook
+  deleteNotebook(id)
+  // re-render the notebook view
+  notebookView.render(state.notebooks)
 }

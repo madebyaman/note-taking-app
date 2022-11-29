@@ -1,5 +1,5 @@
 export type Note = {
-  notebookId: string
+  notebookId: string | null
   notebook: string | undefined
   favorite: boolean
   createdDate: string

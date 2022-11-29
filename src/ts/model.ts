@@ -48,7 +48,12 @@ export function loadNotes(props?: {
     state.notebooks = notebooks
     const newNotes: Note[] = notes.map((note) => {
       const title = getTitleOfNote(note.text)
-      const notebook = getNotebookFromId(note.notebookId, notebooks)
+      let notebook
+      if (note.notebookId) {
+        notebook = getNotebookFromId(note.notebookId, notebooks)
+      } else {
+        notebook = undefined
+      }
       return { title, notebook, ...note }
     })
     state.notes = newNotes
@@ -106,4 +111,37 @@ export function showFavoriteNotes() {
 
 export function showNotesFromNotebook(id: string) {
   return state.notes.filter((note) => note.id === id)
+}
+
+export function renameNotebook(name: string, id: string) {
+  const newNotebooks = state.notebooks.map((notebook) => {
+    if (notebook.id === id) {
+      return {
+        ...notebook,
+        name,
+      }
+    } else return notebook
+  })
+
+  state.notebooks = newNotebooks
+}
+
+export function deleteNotebook(id: string) {
+  // first remove notes id of this notebook.
+  // what about trashed note?
+  const newNotes = state.notes.map((note) => {
+    if (note.notebookId === id) {
+      return {
+        ...note,
+        notebookId: null,
+        notebook: undefined,
+      }
+    } else return note
+  })
+
+  state.notes = newNotes
+
+  // Next, delete notebook
+  const newNotebooks = state.notebooks.filter((notebook) => notebook.id !== id)
+  state.notebooks = newNotebooks
 }
