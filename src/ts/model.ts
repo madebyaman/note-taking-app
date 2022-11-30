@@ -177,3 +177,15 @@ export function showTrashedNotes(): Note[] {
 export function showAllNotes(): Note[] {
   return state.notes.filter((note) => !note.inTrash)
 }
+
+export function recoverNote(id: string): void {
+  const newNotes = state.notes.map((note) => {
+    if (note.id === id) {
+      return {
+        ...note,
+        inTrash: false,
+      }
+    } else return note
+  })
+  state.notes = newNotes
+}

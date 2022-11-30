@@ -4,6 +4,7 @@ import {
   deleteNote,
   deleteNotebook,
   loadNotes,
+  recoverNote,
   renameNotebook,
   saveNotes,
   showAllNotes,
@@ -53,6 +54,7 @@ function renderEditorView(id: string) {
   if (note) {
     noteView.render({
       type: 'RENDER_EDITOR',
+      recoverNoteHandler: recoverDeletedNote,
       data: note,
     })
   }
@@ -61,10 +63,10 @@ function renderEditorView(id: string) {
 function renderNoteView(id: string): void {
   const note = state.notes.find((note) => note.id === id)
   if (note) {
-    console.log('rerending noteview', note.inTrash)
     noteView.render({
       type: 'RENDER_PREVIEW',
       data: note,
+      recoverNoteHandler: recoverDeletedNote,
     })
   }
 }
@@ -134,8 +136,7 @@ function allNotesController() {
 function trashedNotesController() {
   notesView.render({ notes: showTrashedNotes(), hideCreateNewNoteButton: true })
   showNote({ type: 'RENDER_EMPTY' })
-  // TODO Hide create note option in it.
-  // 2. Make an option to restore the note
+  // Add handler to recover deleted note
 }
 
 function notebookController(id: string) {
@@ -164,4 +165,9 @@ function newNotebookController(name: string) {
   addNewNotebook(name)
   // render the notebook view
   notebookView.render(state.notebooks)
+}
+
+function recoverDeletedNote(id: string) {
+  recoverNote(id)
+  trashedNotesController()
 }

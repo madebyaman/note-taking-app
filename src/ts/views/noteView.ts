@@ -10,6 +10,7 @@ type NoteProps =
   | {
       type: 'RENDER_PREVIEW' | 'RENDER_EDITOR'
       data: NoteType
+      recoverNoteHandler: (id: string) => void
     }
 
 class NoteView extends Note<NoteType> {
@@ -23,6 +24,14 @@ class NoteView extends Note<NoteType> {
         if (!this._data) return console.error('No data passed')
         handler(this._data?.text || '', this._data.id)
       })
+    }
+  }
+
+  #addRecoverNoteHandler(handler: (id: string) => void) {
+    const button = document.querySelector('button.recover-note__button')
+    if (button && this._data) {
+      const { id } = this._data
+      button.addEventListener('click', () => handler(id))
     }
   }
 
@@ -175,17 +184,21 @@ class NoteView extends Note<NoteType> {
   }
 
   #renderDeletedNoteMessage() {
-    const mainContent = document.querySelector('main.main-content')
+    const mainContent = document.querySelector('div.recover-note')
     const markup = this.#generateMarkupToRecoverTrashNoteMessage()
     if (this._data?.inTrash) {
       mainContent?.insertAdjacentHTML('afterbegin', markup)
+    } else if (mainContent) {
+      mainContent.innerHTML = ''
     }
   }
 
   render(props: NoteProps) {
     this.#type = props.type
     if (props.type === 'RENDER_EMPTY') {
+      this._data = undefined
       this.#renderEmpty()
+      this.#renderDeletedNoteMessage()
     } else {
       this.#renderIcons()
       this._data = props.data
@@ -198,6 +211,7 @@ class NoteView extends Note<NoteType> {
       this.#addEventHandlerToToggleEditingMode()
       if (this._data.inTrash) {
         this.#renderDeletedNoteMessage()
+        this.#addRecoverNoteHandler(props.recoverNoteHandler)
       }
     }
   }
@@ -260,7 +274,7 @@ class NoteView extends Note<NoteType> {
   }
 
   #generateMarkupToRecoverTrashNoteMessage() {
-    return `<div class="recover-note-container"><p>Want to recover this note?</p><button class="recover-note__button">Recover</button></div>`
+    return `<p>Want to recover this note?</p><button class="recover-note__button">Recover</button>`
   }
 }
 
