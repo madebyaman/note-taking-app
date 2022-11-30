@@ -1,4 +1,5 @@
 import Note from './Note'
+import { Note as NoteType } from '../types'
 import svg from '../../img/empty-note.svg'
 import marked from 'marked'
 
@@ -8,22 +9,20 @@ type NoteProps =
     }
   | {
       type: 'RENDER_PREVIEW' | 'RENDER_EDITOR'
-      data: string
-      id: string
-      favorite: boolean
+      data: NoteType
     }
 
-class NoteView extends Note<string> {
+class NoteView extends Note<NoteType> {
   _parentElement = document.querySelector('.notes-browser')
-  _id: string
   #type: 'RENDER_PREVIEW' | 'RENDER_EDITOR' | 'RENDER_EMPTY'
 
   addSaveHandler(handler: (val: string, id: string) => void) {
     const saveButton = document.querySelector('button.save')
     if (saveButton) {
-      saveButton.addEventListener('click', () =>
-        handler(this._data || '', this._id)
-      )
+      saveButton.addEventListener('click', () => {
+        if (!this._data) return console.error('No data passed')
+        handler(this._data?.text || '', this._data.id)
+      })
     }
   }
 
@@ -32,7 +31,9 @@ class NoteView extends Note<string> {
     if (textarea instanceof HTMLTextAreaElement) {
       textarea?.addEventListener('input', (e) => {
         if (e.target instanceof HTMLTextAreaElement) {
-          this._data = e.target.value
+          if (this._data) {
+            this._data.text = e.target.value
+          }
         }
       })
     }
@@ -40,12 +41,18 @@ class NoteView extends Note<string> {
 
   addStarHandler(handler: (id: string) => void) {
     const starButton = document.querySelector('button.star')
-    starButton?.addEventListener('click', () => handler(this._id))
+    if (this._data) {
+      const id = this._data.id
+      starButton?.addEventListener('click', () => handler(id))
+    }
   }
 
   addDeleteHandler(handler: (id: string) => void) {
     const deleteButton = document.querySelector('button.delete')
-    deleteButton?.addEventListener('click', () => handler(this._id))
+    if (this._data) {
+      const id = this._data.id
+      deleteButton?.addEventListener('click', () => handler(id))
+    }
   }
 
   #toggleEditingMode() {
@@ -167,6 +174,14 @@ class NoteView extends Note<string> {
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
   }
 
+  #renderDeletedNoteMessage() {
+    const mainContent = document.querySelector('main.main-content')
+    const markup = this.#generateMarkupToRecoverTrashNoteMessage()
+    if (this._data?.inTrash) {
+      mainContent?.insertAdjacentHTML('afterbegin', markup)
+    }
+  }
+
   render(props: NoteProps) {
     this.#type = props.type
     if (props.type === 'RENDER_EMPTY') {
@@ -174,14 +189,16 @@ class NoteView extends Note<string> {
     } else {
       this.#renderIcons()
       this._data = props.data
-      this._id = props.id
-      this.renderStarIcon(props.favorite)
+      this.renderStarIcon(props.data.favorite)
       if (props.type === 'RENDER_PREVIEW') {
         this.#renderPreviewMode()
       } else {
         this.#renderEditorMode()
       }
       this.#addEventHandlerToToggleEditingMode()
+      if (this._data.inTrash) {
+        this.#renderDeletedNoteMessage()
+      }
     }
   }
 
@@ -237,9 +254,13 @@ class NoteView extends Note<string> {
   #generateMarkup() {
     return `
       <div class="notes-browser__preview">
-        ${marked(this._data || '', { sanitize: true })}
+        ${marked(this._data?.text || '', { sanitize: true })}
       </div>
     `
+  }
+
+  #generateMarkupToRecoverTrashNoteMessage() {
+    return `<div class="recover-note-container"><p>Want to recover this note?</p><button class="recover-note__button">Recover</button></div>`
   }
 }
 

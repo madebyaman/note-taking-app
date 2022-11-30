@@ -6,13 +6,11 @@ import { v4 } from 'uuid'
 interface StateProps {
   notes: Note[]
   notebooks: Notebook[]
-  trashedNotes: Note[]
 }
 
 export let state: StateProps = {
   notes: [],
   notebooks: [],
-  trashedNotes: [], // Don't sync this with local storage
 }
 
 function getTitleOfNote(md: string): string {
@@ -39,7 +37,8 @@ export function loadNotes(props?: {
     const newNotes: Note[] = defaultNotes.map((note) => {
       const title = getTitleOfNote(note.text)
       const notebook = getNotebookFromId(note.notebookId, defaultNotebooks)
-      return { title, notebook, ...note }
+      const inTrash = false
+      return { title, notebook, inTrash, ...note }
     })
     state.notes = newNotes
     state.notebooks = defaultNotebooks
@@ -61,13 +60,20 @@ export function loadNotes(props?: {
   }
 }
 
-export function addNewDefaultNote(): string {
+export function addNewDefaultNote(notebookIdToAdd?: string): string {
+  let notebook: Notebook | undefined
+  if (notebookIdToAdd) {
+    notebook = state.notebooks.find(
+      (notebook) => notebook.id === notebookIdToAdd
+    )
+  }
   const newNote = {
     title: '',
-    notebook: undefined,
+    notebook: notebook?.name,
     id: v4(),
     text: '',
-    notebookId: null,
+    notebookId: notebook?.id || null,
+    inTrash: false,
     favorite: false,
     createdDate: new Date(Date.now()).toISOString(),
   }
@@ -100,12 +106,15 @@ export function starNote(id: string) {
 }
 
 export function deleteNote(id: string) {
-  const newNotes = state.notes.filter((note) => {
+  const newNotes = state.notes.map((note) => {
     if (note.id === id) {
-      state.trashedNotes.push(note)
-      return false
+      const newNote = {
+        ...note,
+        inTrash: true,
+      }
+      return newNote
     } else {
-      return true
+      return note
     }
   })
   state.notes = newNotes
@@ -116,7 +125,7 @@ export function showFavoriteNotes() {
 }
 
 export function showNotesFromNotebook(id: string) {
-  return state.notes.filter((note) => note.id === id)
+  return state.notes.filter((note) => note.notebookId === id)
 }
 
 export function renameNotebook(name: string, id: string) {
@@ -159,4 +168,12 @@ export function addNewNotebook(name: string) {
   }
 
   state.notebooks.push(newNotebook)
+}
+
+export function showTrashedNotes(): Note[] {
+  return state.notes.filter((note) => note.inTrash)
+}
+
+export function showAllNotes(): Note[] {
+  return state.notes.filter((note) => !note.inTrash)
 }

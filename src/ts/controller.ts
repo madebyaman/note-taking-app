@@ -6,8 +6,10 @@ import {
   loadNotes,
   renameNotebook,
   saveNotes,
+  showAllNotes,
   showFavoriteNotes,
   showNotesFromNotebook,
+  showTrashedNotes,
   starNote,
   state,
 } from './model'
@@ -51,9 +53,7 @@ function renderEditorView(id: string) {
   if (note) {
     noteView.render({
       type: 'RENDER_EDITOR',
-      data: note.text,
-      id: note.id,
-      favorite: this.favorite,
+      data: note,
     })
   }
 }
@@ -61,11 +61,10 @@ function renderEditorView(id: string) {
 function renderNoteView(id: string): void {
   const note = state.notes.find((note) => note.id === id)
   if (note) {
+    console.log('rerending noteview', note.inTrash)
     noteView.render({
       type: 'RENDER_PREVIEW',
-      data: note.text,
-      id: note.id,
-      favorite: this.favorite,
+      data: note,
     })
   }
 }
@@ -75,7 +74,7 @@ function init(): void {
   // 1. Render notebook view
   notebookView.render(state.notebooks)
   // 2. Render notes view
-  notesView.render(state.notes)
+  notesView.render({ notes: showAllNotes() })
   // 3. Event handler in notes.
   notesView.addClickEventHandlerToOpen(onClickNote)
   // 4. Event handler for new note
@@ -94,11 +93,11 @@ function init(): void {
 }
 init()
 
-function addNewNote(): void {
+function addNewNote(notebookIdToAdd?: string): void {
   // 2. Add the note to state
-  const id = addNewDefaultNote()
+  const id = addNewDefaultNote(notebookIdToAdd)
   // 3. Rerender notesView
-  notesView.render(state.notes, id)
+  notesView.render({ notes: showAllNotes(), activeNoteId: id })
   // 4. Open note in note editor
   showNote({ id, type: 'RENDER_EDITOR' })
 }
@@ -106,14 +105,14 @@ function addNewNote(): void {
 function deleteNoteController(id: string) {
   deleteNote(id)
   // Re render note view
-  notesView.render(state.notes)
+  notesView.render({ notes: showAllNotes() })
   showNote({ type: 'RENDER_EMPTY' })
 }
 
 function favoriteNoteController(id: string) {
   starNote(id)
   // Re render views
-  notesView.render(state.notes, id)
+  notesView.render({ notes: showAllNotes(), activeNoteId: id })
   const note = state.notes.find((note) => note.id === id)
   if (note) {
     noteView.renderStarIcon(note.favorite)
@@ -123,17 +122,17 @@ function favoriteNoteController(id: string) {
 function favoriteCategoryController() {
   const notes = showFavoriteNotes()
   // Re-render views
-  notesView.render(notes)
+  notesView.render({ notes })
   showNote({ type: 'RENDER_EMPTY' })
 }
 
 function allNotesController() {
-  notesView.render(state.notes)
+  notesView.render({ notes: showAllNotes() })
   showNote({ type: 'RENDER_EMPTY' })
 }
 
 function trashedNotesController() {
-  notesView.render(state.trashedNotes)
+  notesView.render({ notes: showTrashedNotes(), hideCreateNewNoteButton: true })
   showNote({ type: 'RENDER_EMPTY' })
   // TODO Hide create note option in it.
   // 2. Make an option to restore the note
@@ -141,7 +140,7 @@ function trashedNotesController() {
 
 function notebookController(id: string) {
   const notes = showNotesFromNotebook(id)
-  notesView.render(notes)
+  notesView.render({ notes, newNoteNotebookId: id })
   showNote({ type: 'RENDER_EMPTY' })
   // TODO when add new note option is clicked pass this id to it.
 }

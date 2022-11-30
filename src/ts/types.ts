@@ -1,5 +1,6 @@
 export type Note = {
   notebookId: string | null
+  inTrash: boolean
   notebook: string | undefined
   favorite: boolean
   createdDate: string

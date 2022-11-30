@@ -1,8 +1,16 @@
 import Note from './Note'
 import { Note as Notetype } from '../types'
 
+type RenderProps = {
+  notes: Notetype[]
+  activeNoteId?: string
+  newNoteNotebookId?: string
+  hideCreateNewNoteButton?: boolean
+}
+
 class NotesView extends Note<Notetype[]> {
   _parentElement = document.querySelector('.notes__container-notes')
+  #notebookId?: string
 
   addClickEventHandlerToOpen(handler: (id: string) => void) {
     const notesListContainer = document.querySelector('.notes__container-notes')
@@ -19,8 +27,22 @@ class NotesView extends Note<Notetype[]> {
     })
   }
 
-  addHandlerForNewNote(handler: () => void) {
-    document.querySelector('.add-new-note')?.addEventListener('click', handler)
+  #hideCreateNewNoteButton() {
+    document.querySelector('.add-new-note')?.classList.add('hide')
+  }
+
+  #showCreateNewNoteButton() {
+    document.querySelector('.add-new-note')?.classList.remove('hide')
+  }
+
+  addHandlerForNewNote(handler: (notebookIdToAdd?: string) => void) {
+    document.querySelector('.add-new-note')?.addEventListener('click', () => {
+      if (this.#notebookId) {
+        handler(this.#notebookId)
+      } else {
+        handler()
+      }
+    })
   }
 
   #addActiveClassToNote(id: string) {
@@ -38,15 +60,22 @@ class NotesView extends Note<Notetype[]> {
     })
   }
 
-  render(data: Notetype[], activeNote?: string) {
-    this._data = data
+  render(props: RenderProps) {
+    const { notes, activeNoteId, newNoteNotebookId } = props
+    this._data = notes
+    this.#notebookId = newNoteNotebookId
     this._clear()
     const markup = this.#generateMarkup()
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
-    if (activeNote) {
-      this.#addActiveClassToNote(activeNote)
+    if (activeNoteId) {
+      this.#addActiveClassToNote(activeNoteId)
     } else {
       this.#removeActiveClass()
+    }
+    if (props.hideCreateNewNoteButton) {
+      this.#hideCreateNewNoteButton()
+    } else {
+      this.#showCreateNewNoteButton()
     }
   }
 

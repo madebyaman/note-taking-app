@@ -12,6 +12,7 @@ Notes Container
 .notes__container-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   border-bottom: 1px solid #dedede;
 
@@ -21,6 +22,10 @@ Notes Container
 
   .add-new-note {
     margin-top: 12px;
+  }
+
+  .add-new-note.hide {
+    display: none;
   }
 }
 
