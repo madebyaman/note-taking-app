@@ -1,6 +1,12 @@
 import Note from './Note'
 import { Notebook } from '../types'
 
+type EventHandlerToNotebook = {
+  renameHandler: (val: string, id: string) => void
+  deleteHandler: (id: string) => void
+  openHandler: (id: string) => void
+}
+
 class NotebookView extends Note<Notebook[]> {
   _parentElement = document.querySelector('ul.note-books')
 
@@ -15,6 +21,7 @@ class NotebookView extends Note<Notebook[]> {
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
   }
 
+  // Add new notebook logic
   addEventHandlerToAddNotebookButton(handler: (name: string) => void): void {
     const addButton = document.querySelector('button.add-notebook')
     if (addButton && addButton instanceof HTMLButtonElement) {
@@ -49,77 +56,93 @@ class NotebookView extends Note<Notebook[]> {
     return form
   }
 
-  addEventHandler(handler: (id: string) => void) {
-    const allNotebooks = document.querySelectorAll('.notebook__button')
-    allNotebooks.forEach((notebook) => {
-      const id = notebook.closest('li')?.getAttribute('data-notebookid')
-      if (!id) {
-        return console.error('ID not found for the notebook', notebook)
-      }
-      notebook.addEventListener('click', () => {
-        this.#removeActiveClass()
-        notebook.classList.add('active')
-        handler(id)
-      })
-    })
-  }
-
-  onRename(handler: (name: string, id: string) => void) {
-    const form = document.querySelector('form.notebook__name-form')
-    const input = document.querySelector('input.notebook__name-input')
-    if (form && input && input instanceof HTMLInputElement) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        const notebook = input.closest('li')
-        if (!notebook) return
-        const id = notebook.getAttribute('data-notebookid')
-        if (!id) return
-        handler(input.value, id)
-      })
+  // Open notebook logic
+  #openNotebookEventHandler(
+    li: HTMLElement | null,
+    handler: (id: string) => void
+  ) {
+    if (!li) {
+      return console.error('No list item to open notebook')
     }
-  }
-
-  addEditNotebookHandler(handler: () => void) {
-    const editButton = document.querySelector('.notebook__rename')
-    editButton?.addEventListener('click', (e) => {
-      e.stopPropagation()
-      const parentEl = document.querySelector('.notebook__button')
-      const el = document.querySelector('.notebook__name')
-      let val: string | null = ''
-      if (el) {
-        val = el.textContent
-        el.remove()
-      }
-      const form = document.createElement('form')
-      form?.classList.add('notebook__name-form')
-      form.innerHTML = `<input type="text" name="notebook-name" class="notebook__name-input" value="${
-        val || ''
-      }" />`
-      parentEl?.appendChild(form)
-      if (form.firstChild && form.firstChild instanceof HTMLInputElement) {
-        form.firstChild?.focus()
-      }
-      handler()
-    })
-  }
-
-  addDeleteNotebookHandler(handler: (id: string) => void) {
-    const deleteButton = document.querySelector('.notebook__delete')
-    if (!deleteButton) {
-      return console.error('No delete button')
-    }
-    deleteButton.addEventListener('click', () => {
-      const li = deleteButton.closest('li')
-      if (!li) {
-        return console.error('No li item to get id')
-      }
-      const id = li.getAttribute('data-notebookid')
-      if (!id) return console.error('No id')
+    const id = li?.getAttribute('data-notebookid')
+    this.#removeActiveClass()
+    li.classList.add('active')
+    if (id) {
       handler(id)
+    }
+  }
+
+  // Rename notebook name logic
+  #editNotebookHandler(
+    li: HTMLElement | null,
+    handler: (val: string, id: string) => void
+  ) {
+    if (!li) {
+      return console.error('No list item')
+    }
+    const parentEl = li.querySelector('.notebook__button')
+    const el = li.querySelector('.notebook__name')
+    let val: string | null = ''
+    if (el) {
+      val = el.textContent
+      el.remove()
+    }
+    const form = document.createElement('form')
+    form.classList.add('notebook__name-form')
+    const input = document.createElement('input')
+    input.name = 'notebook-name'
+    input.classList.add('notebook__name-input')
+    input.value = val || ''
+    form.appendChild(input)
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      const id = li.getAttribute('data-notebookid')
+      if (!id) return
+      handler(input.value, id)
+    })
+    parentEl?.appendChild(form)
+    if (form.firstChild && form.firstChild instanceof HTMLInputElement) {
+      form.firstChild?.focus()
+    }
+  }
+
+  // Delete notebook logic
+  #addDeleteNotebookHandler(
+    li: HTMLElement | null,
+    handler: (id: string) => void
+  ) {
+    if (!li) {
+      return console.error('No li item to get id')
+    }
+    const id = li.getAttribute('data-notebookid')
+    if (!id) return console.error('No id')
+    handler(id)
+  }
+
+  // Event handlers to notebook
+  addEventHandlersToNotebook(props: EventHandlerToNotebook) {
+    const parentEl = document.querySelector('ul.note-books')
+    parentEl?.addEventListener('click', (e) => {
+      e.stopPropagation()
+      if (e.target instanceof HTMLElement || e.target instanceof SVGElement) {
+        const closestButton = e.target.closest('button')
+        const closestLi = e.target.closest('li')
+        if (closestButton?.classList.contains('notebook__button')) {
+          // Run open notebook handler
+          this.#openNotebookEventHandler(closestLi, props.openHandler)
+        } else if (closestButton?.classList.contains('notebook__rename')) {
+          // Run rename notebook handler
+          this.#editNotebookHandler(closestLi, props.renameHandler)
+        } else if (closestButton?.classList.contains('notebook__delete')) {
+          // Run delete notebook handler
+          this.#addDeleteNotebookHandler(closestLi, props.deleteHandler)
+        }
+      }
     })
   }
 
+  // Open category like Notes, Favorite logic
   addEventHandlerToNotes(handler: () => void) {
     const notesCategory = document.querySelector('li.category-notes')
     if (notesCategory) {

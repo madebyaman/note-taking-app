@@ -14,8 +14,6 @@ import {
 import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
-import { v4 } from 'uuid'
-import { NoteWithoutTitleAndNotebook } from './types'
 
 if (module.hot) {
   module.hot.accept()
@@ -101,10 +99,12 @@ function init(): void {
   notebookView.addEventHandlerToNotes(allNotesController)
   notebookView.addEventHandlerToTrash(trashedNotesController)
   // 6. Event handler for notebook
-  notebookView.addEventHandler(notebookController)
-  notebookView.addEditNotebookHandler(editNotebookController)
-  notebookView.addDeleteNotebookHandler(deleteNotebookController)
   notebookView.addEventHandlerToAddNotebookButton(newNotebookController)
+  notebookView.addEventHandlersToNotebook({
+    deleteHandler: deleteNotebookController,
+    renameHandler: renameNotebookController,
+    openHandler: notebookController,
+  })
 }
 init()
 
@@ -166,10 +166,6 @@ function renameNotebookController(name: string, id: string) {
   renameNotebook(name, id)
   // re-render the notebook view
   notebookView.render(state.notebooks)
-}
-
-function editNotebookController() {
-  notebookView.onRename(renameNotebookController)
 }
 
 function deleteNotebookController(id: string) {
