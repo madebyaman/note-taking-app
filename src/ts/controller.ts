@@ -25,13 +25,10 @@ type ShowNoteProps =
 
 function showNote(props: ShowNoteProps) {
   if (props.type === 'RENDER_EMPTY') {
-    notesView.removeActiveClass()
     noteView.render({ type: 'RENDER_EMPTY' })
     return
   }
   const { type, id } = props
-  notesView.removeActiveClass()
-  notesView.addActiveClassToNote(id)
   if (type === 'RENDER_EDITOR') {
     // Editor view
     renderEditorView(id)
@@ -45,19 +42,8 @@ function showNote(props: ShowNoteProps) {
   noteView.addStarHandler(favoriteNoteController)
 }
 
-export function onClickNote(e: Event): void {
-  if (e.target instanceof Element) {
-    const closestNote = e.target.closest('.notes__container-note')
-    const id = closestNote?.getAttribute('data-noteid')
-    if (!id) {
-      // remove active class
-      notesView.removeActiveClass()
-      // show nothing in note view
-      noteView.render({ type: 'RENDER_EMPTY' })
-    } else {
-      showNote({ id: id, type: 'RENDER_PREVIEW' })
-    }
-  }
+function onClickNote(id: string): void {
+  showNote({ id: id, type: 'RENDER_PREVIEW' })
 }
 
 function renderEditorView(id: string) {
@@ -91,7 +77,7 @@ function init(): void {
   // 2. Render notes view
   notesView.render(state.notes)
   // 3. Event handler in notes.
-  notesView.addHandler(onClickNote)
+  notesView.addClickEventHandlerToOpen(onClickNote)
   // 4. Event handler for new note
   notesView.addHandlerForNewNote(addNewNote)
   // 5. Event handlers for category
@@ -112,7 +98,7 @@ function addNewNote(): void {
   // 2. Add the note to state
   const id = addNewDefaultNote()
   // 3. Rerender notesView
-  notesView.render(state.notes)
+  notesView.render(state.notes, id)
   // 4. Open note in note editor
   showNote({ id, type: 'RENDER_EDITOR' })
 }
@@ -127,8 +113,7 @@ function deleteNoteController(id: string) {
 function favoriteNoteController(id: string) {
   starNote(id)
   // Re render views
-  notesView.render(state.notes)
-  notesView.addActiveClassToNote(id)
+  notesView.render(state.notes, id)
   const note = state.notes.find((note) => note.id === id)
   if (note) {
     noteView.renderStarIcon(note.favorite)

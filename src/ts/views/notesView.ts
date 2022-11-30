@@ -4,33 +4,50 @@ import { Note as Notetype } from '../types'
 class NotesView extends Note<Notetype[]> {
   _parentElement = document.querySelector('.notes__container-notes')
 
+  addClickEventHandlerToOpen(handler: (id: string) => void) {
+    const notesListContainer = document.querySelector('.notes__container-notes')
+    notesListContainer?.addEventListener('click', (e) => {
+      e.stopPropagation()
+      if (e.target instanceof HTMLElement) {
+        const closestNote = e.target.closest('article')
+        const id = closestNote?.getAttribute('data-noteid')
+        if (id) {
+          this.#addActiveClassToNote(id)
+          handler(id)
+        }
+      }
+    })
+  }
+
   addHandlerForNewNote(handler: () => void) {
     document.querySelector('.add-new-note')?.addEventListener('click', handler)
   }
 
-  addHandler(handler: (ev: Event) => void) {
-    this._parentElement?.addEventListener('click', (e) => handler(e))
-  }
-
-  addActiveClassToNote(id: string) {
+  #addActiveClassToNote(id: string) {
+    this.#removeActiveClass()
     const note = document.querySelector(`article[data-noteid="${id}"]`)
     if (note) {
       note.classList.add('active')
     }
   }
 
-  removeActiveClass() {
+  #removeActiveClass() {
     const notes = document.querySelectorAll('.notes__container-note')
     notes.forEach((note) => {
       note.classList.remove('active')
     })
   }
 
-  render(data: Notetype[]) {
+  render(data: Notetype[], activeNote?: string) {
     this._data = data
     this._clear()
     const markup = this.#generateMarkup()
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
+    if (activeNote) {
+      this.#addActiveClassToNote(activeNote)
+    } else {
+      this.#removeActiveClass()
+    }
   }
 
   #generateMarkup() {
