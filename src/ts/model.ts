@@ -1,6 +1,7 @@
 import defaultNotes from '../notes.json'
 import defaultNotebooks from '../notebooks.json'
 import { Note, Notebook, NoteWithoutTitleAndNotebook } from './types'
+import { v4 } from 'uuid'
 
 interface StateProps {
   notes: Note[]
@@ -60,13 +61,18 @@ export function loadNotes(props?: {
   }
 }
 
-export function addNewNoteToState(note: NoteWithoutTitleAndNotebook): void {
+export function addNewDefaultNote(): string {
   const newNote = {
     title: '',
-    notebook: 'Notes',
-    ...note,
+    notebook: undefined,
+    id: v4(),
+    text: '',
+    notebookId: null,
+    favorite: false,
+    createdDate: new Date(Date.now()).toISOString(),
   }
   state.notes.push(newNote)
+  return newNote.id
 }
 
 export function saveNotes(val: string, id: string) {
@@ -144,4 +150,13 @@ export function deleteNotebook(id: string) {
   // Next, delete notebook
   const newNotebooks = state.notebooks.filter((notebook) => notebook.id !== id)
   state.notebooks = newNotebooks
+}
+
+export function addNewNotebook(name: string) {
+  const newNotebook = {
+    name,
+    id: v4(),
+  }
+
+  state.notebooks.push(newNotebook)
 }

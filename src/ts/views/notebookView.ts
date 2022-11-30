@@ -15,6 +15,40 @@ class NotebookView extends Note<Notebook[]> {
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
   }
 
+  addEventHandlerToAddNotebookButton(handler: (name: string) => void): void {
+    const addButton = document.querySelector('button.add-notebook')
+    if (addButton && addButton instanceof HTMLButtonElement) {
+      addButton.addEventListener('click', () => {
+        const form = this.#generateAddNotebookFormMarkup(handler)
+        const parenEl = document.querySelector('.notebooks-section')
+        if (parenEl) {
+          parenEl.appendChild(form)
+        }
+      })
+    }
+  }
+
+  #generateAddNotebookFormMarkup(
+    handler: (name: string) => void
+  ): HTMLFormElement {
+    const form = document.createElement('form')
+    form.classList.add('add-notebook__form')
+    const input = document.createElement('input')
+    input.classList.add('new-notebook-input')
+    input.type = 'text'
+    input.name = 'new-notebook'
+    input.placeholder = 'Notebook Name'
+    input.autofocus = true
+    form.appendChild(input)
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      handler(input.value)
+      input.value = ''
+      form.remove()
+    })
+    return form
+  }
+
   addEventHandler(handler: (id: string) => void) {
     const allNotebooks = document.querySelectorAll('.notebook__button')
     allNotebooks.forEach((notebook) => {

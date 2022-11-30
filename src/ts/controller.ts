@@ -1,5 +1,6 @@
 import {
-  addNewNoteToState,
+  addNewDefaultNote,
+  addNewNotebook,
   deleteNote,
   deleteNotebook,
   loadNotes,
@@ -103,24 +104,17 @@ function init(): void {
   notebookView.addEventHandler(notebookController)
   notebookView.addEditNotebookHandler(editNotebookController)
   notebookView.addDeleteNotebookHandler(deleteNotebookController)
+  notebookView.addEventHandlerToAddNotebookButton(newNotebookController)
 }
 init()
 
 function addNewNote(): void {
-  // 2. Create new note and open it in Editor view
-  const newNote: NoteWithoutTitleAndNotebook = {
-    id: v4(),
-    text: '',
-    notebookId: '',
-    favorite: false,
-    createdDate: new Date(Date.now()).toISOString(),
-  }
   // 2. Add the note to state
-  addNewNoteToState(newNote)
+  const id = addNewDefaultNote()
   // 3. Rerender notesView
   notesView.render(state.notes)
   // 4. Open note in note editor
-  showNote({ id: newNote.id, type: 'RENDER_EDITOR' })
+  showNote({ id, type: 'RENDER_EDITOR' })
 }
 
 function deleteNoteController(id: string) {
@@ -182,5 +176,12 @@ function deleteNotebookController(id: string) {
   // call model function to rename the notebook
   deleteNotebook(id)
   // re-render the notebook view
+  notebookView.render(state.notebooks)
+}
+
+function newNotebookController(name: string) {
+  // Add the notebook to state
+  addNewNotebook(name)
+  // render the notebook view
   notebookView.render(state.notebooks)
 }
