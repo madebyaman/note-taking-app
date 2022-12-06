@@ -14,6 +14,7 @@ import {
   starNote,
   state,
 } from './model'
+import { Note } from './types'
 import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
@@ -25,10 +26,8 @@ if (module.hot) {
 function getPageAndNoteUrl(): { page: string | null; note: string | null } {
   // Get the query string from the URL
   const queryString = window.location.search
-
   // Parse the query string using the URLSearchParams interface
   const urlParams = new URLSearchParams(queryString)
-
   // Get the value of the "page" and "note" parameters from the query string
   const page = urlParams.get('page')
   const note = urlParams.get('note')
@@ -36,15 +35,25 @@ function getPageAndNoteUrl(): { page: string | null; note: string | null } {
 }
 
 function refreshViews(): void {
-  init()
   const { page, note } = getPageAndNoteUrl()
   console.log('refreshed view', page, note)
+  let notes: Note[]
+  if (page === 'all') {
+    notes = state.notes
+  } else if (page === 'favorites') {
+    notes = showFavoriteNotes()
+  } else if (page === 'trash') {
+    notes = showTrashedNotes()
+  } else if (page) {
+    notes = showNotesFromNotebook(page)
+  } else {
+    notes = []
+  }
   if (page && note) {
     // Show page like notebook, all notes, favorites, trash
     // Render notebook view
     notebookView.render(state.notebooks, page)
-    const categoryNotes = showNotesFromNotebook(page)
-    notesView.render({ notes: categoryNotes, activeNoteId: note })
+    notesView.render({ notes: notes, activeNoteId: note })
     // Also show that note
     showNote({ type: 'RENDER_PREVIEW', id: note })
     // Render note view
@@ -52,12 +61,13 @@ function refreshViews(): void {
     // Empty note view
     // Page view
     notebookView.render(state.notebooks, page)
-    const categoryNotes = showNotesFromNotebook(page)
-    notesView.render({ notes: categoryNotes })
+    notesView.render({ notes })
+    showNote({ type: 'RENDER_EMPTY' })
   } else {
     // Render home view
     notebookView.render(state.notebooks)
     notesView.render({ notes: state.notes })
+    showNote({ type: 'RENDER_EMPTY' })
   }
 }
 
@@ -85,14 +95,22 @@ function showNote(props: ShowNoteProps) {
 }
 
 function onClickNote(id: string): void {
-  // showNote({ id: id, type: 'RENDER_PREVIEW' })
+  // Get the query string from the URL
+  const queryString = window.location.search
+  // Parse the query string using the URLSearchParams interface
+  const oldParams = new URLSearchParams(queryString)
+  // Get the value of the "page" and "note" parameters from the query string
+  const page = oldParams.get('page')
   // Create a new URLSearchParams object and set the "page" and "note" parameters
   const urlParams = new URLSearchParams()
+  if (page) {
+    urlParams.set('page', page)
+  }
   urlParams.set('note', id)
 
   // Get the current URL and append the updated query string to it
-  const currentUrl = window.location.href
-  const newUrl = currentUrl + '&&' + urlParams.toString()
+  const currentUrl = window.location.origin
+  const newUrl = currentUrl + '?' + urlParams.toString()
 
   // Use the pushState() method of the window.history API to update the URL in the browser's address bar
   window.history.pushState({}, '', newUrl)
@@ -131,10 +149,6 @@ function init(): void {
   notesView.addClickEventHandlerToOpen(onClickNote)
   // 4. Event handler for new note
   notesView.addHandlerForNewNote(addNewNote)
-  // 5. Event handlers for category
-  notebookView.addEventHandlerToFavorite(favoriteCategoryController)
-  notebookView.addEventHandlerToNotes(allNotesController)
-  notebookView.addEventHandlerToTrash(trashedNotesController)
   // 6. Event handler for notebook
   notebookView.addEventHandlerToAddNotebookButton(newNotebookController)
   notebookView.addEventHandlersToNotebook({
@@ -144,6 +158,7 @@ function init(): void {
   })
 }
 refreshViews()
+init()
 
 function addNewNote(notebookIdToAdd?: string): void {
   // 2. Add the note to state
@@ -169,18 +184,6 @@ function favoriteNoteController(id: string) {
   if (note) {
     noteView.renderStarIcon(note.favorite)
   }
-}
-
-function favoriteCategoryController() {
-  const notes = showFavoriteNotes()
-  // Re-render views
-  notesView.render({ notes })
-  showNote({ type: 'RENDER_EMPTY' })
-}
-
-function allNotesController() {
-  notesView.render({ notes: showAllNotes() })
-  showNote({ type: 'RENDER_EMPTY' })
 }
 
 function trashedNotesController() {
