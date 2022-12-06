@@ -24,14 +24,15 @@ if (module.hot) {
 }
 
 function getPageAndNoteUrl(): { page: string | null; note: string | null } {
-  // Get the query string from the URL
   const queryString = window.location.search
-  // Parse the query string using the URLSearchParams interface
   const urlParams = new URLSearchParams(queryString)
-  // Get the value of the "page" and "note" parameters from the query string
   const page = urlParams.get('page')
   const note = urlParams.get('note')
   return { page, note }
+}
+
+function navigateToHome(): void {
+  window.history.pushState({}, '', window.location.origin)
 }
 
 function refreshViews(): void {
@@ -46,6 +47,11 @@ function refreshViews(): void {
     notes = showTrashedNotes()
   } else if (page) {
     notes = showNotesFromNotebook(page)
+    if (!notes.length) {
+      // It means category is invalid.
+      navigateToHome()
+      refreshViews()
+    }
   } else {
     notes = []
   }
@@ -95,20 +101,15 @@ function showNote(props: ShowNoteProps) {
 }
 
 function onClickNote(id: string): void {
-  // Get the query string from the URL
   const queryString = window.location.search
-  // Parse the query string using the URLSearchParams interface
   const oldParams = new URLSearchParams(queryString)
-  // Get the value of the "page" and "note" parameters from the query string
   const page = oldParams.get('page')
-  // Create a new URLSearchParams object and set the "page" and "note" parameters
   const urlParams = new URLSearchParams()
   if (page) {
     urlParams.set('page', page)
   }
   urlParams.set('note', id)
 
-  // Get the current URL and append the updated query string to it
   const currentUrl = window.location.origin
   const newUrl = currentUrl + '?' + urlParams.toString()
 
@@ -130,12 +131,17 @@ function renderEditorView(id: string) {
 
 function renderNoteView(id: string): void {
   const note = state.notes.find((note) => note.id === id)
+  console.log(note)
   if (note) {
     noteView.render({
       type: 'RENDER_PREVIEW',
       data: note,
       recoverNoteHandler: recoverDeletedNote,
     })
+  } else {
+    // No note found means, noteId is invalid
+    navigateToHome()
+    refreshViews()
   }
 }
 
