@@ -246,7 +246,7 @@ class NoteView extends Note<NoteType> {
   #generateEditorMarkup() {
     return `
       <textarea class="notes-editor" id="notes-editor" rows="30">${
-        this._data || '# New Note'
+        this._data?.text || '# New Note'
       }</textarea>
     `
   }

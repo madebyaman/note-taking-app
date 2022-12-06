@@ -35,9 +35,7 @@ function navigateToHome(): void {
   window.history.pushState({}, '', window.location.origin)
 }
 
-function refreshViews(): void {
-  const { page, note } = getPageAndNoteUrl()
-  console.log('refreshed view', page, note)
+function getNotesForPage(page: string): Note[] {
   let notes: Note[]
   if (page === 'all') {
     notes = state.notes
@@ -51,15 +49,22 @@ function refreshViews(): void {
       // It means category is invalid.
       navigateToHome()
       refreshViews()
+      return []
     }
   } else {
     notes = []
   }
+  return notes
+}
+
+function refreshViews(): void {
+  const { page, note } = getPageAndNoteUrl()
+  console.log('refreshed view', page, note)
   if (page && note) {
     // Show page like notebook, all notes, favorites, trash
     // Render notebook view
     notebookView.render(state.notebooks, page)
-    notesView.render({ notes: notes, activeNoteId: note })
+    notesView.render({ notes: getNotesForPage(page), activeNoteId: note })
     // Also show that note
     showNote({ type: 'RENDER_PREVIEW', id: note })
     // Render note view
@@ -67,8 +72,13 @@ function refreshViews(): void {
     // Empty note view
     // Page view
     notebookView.render(state.notebooks, page)
-    notesView.render({ notes })
+    notesView.render({ notes: getNotesForPage(page) })
     showNote({ type: 'RENDER_EMPTY' })
+  } else if (note) {
+    console.log('only note')
+    notebookView.render(state.notebooks, 'all')
+    notesView.render({ notes: state.notes, activeNoteId: note })
+    showNote({ type: 'RENDER_PREVIEW', id: note })
   } else {
     // Render home view
     notebookView.render(state.notebooks)
@@ -199,17 +209,11 @@ function trashedNotesController() {
 }
 
 function notebookController(id: string) {
-  // const notes = showNotesFromNotebook(id)
-  // notesView.render({ notes, newNoteNotebookId: id })
-  // showNote({ type: 'RENDER_EMPTY' })
-  // Redirect to new page
   const urlParams = new URLSearchParams()
   urlParams.set('page', id)
-  // Get the current URL and append the updated query string to it
   const currentUrl = window.location.origin
   const newUrl = currentUrl + '?' + urlParams.toString()
   window.history.pushState({}, '', newUrl)
-  // TODO when add new note option is clicked pass this id to it.
   refreshViews()
 }
 
@@ -217,7 +221,7 @@ function renameNotebookController(name: string, id: string) {
   // call model function to rename the notebook
   renameNotebook(name, id)
   // re-render the notebook view
-  notebookView.render(state.notebooks)
+  refreshViews()
   // change the name for Notebook in all notes
 }
 
