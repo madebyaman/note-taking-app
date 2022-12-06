@@ -196,3 +196,7 @@ export function recoverNote(id: string): void {
   })
   state.notes = newNotes
 }
+
+export function checkNotebook(id: string) {
+  return state.notebooks.some((notebook) => notebook.id === id)
+}

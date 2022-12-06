@@ -1,6 +1,7 @@
 import {
   addNewDefaultNote,
   addNewNotebook,
+  checkNotebook,
   deleteNote,
   deleteNotebook,
   loadNotes,
@@ -37,7 +38,12 @@ function navigateToHome(): void {
 
 function getNotesForPage(page: string): Note[] {
   let notes: Note[]
-  if (page === 'all') {
+  if (!checkNotebook(page)) {
+    // It means category is invalid.
+    navigateToHome()
+    refreshViews()
+    return []
+  } else if (page === 'all') {
     notes = state.notes
   } else if (page === 'favorites') {
     notes = showFavoriteNotes()
@@ -45,12 +51,6 @@ function getNotesForPage(page: string): Note[] {
     notes = showTrashedNotes()
   } else if (page) {
     notes = showNotesFromNotebook(page)
-    if (!notes.length) {
-      // It means category is invalid.
-      navigateToHome()
-      refreshViews()
-      return []
-    }
   } else {
     notes = []
   }
@@ -58,6 +58,7 @@ function getNotesForPage(page: string): Note[] {
 }
 
 function refreshViews(): void {
+  console.log(arguments.callee.caller)
   const { page, note } = getPageAndNoteUrl()
   console.log('refreshed view', page, note)
   if (page && note) {
@@ -229,7 +230,7 @@ function deleteNotebookController(id: string) {
   // call model function to rename the notebook
   deleteNotebook(id)
   // re-render the notebook view
-  notebookView.render(state.notebooks)
+  refreshViews()
 }
 
 function newNotebookController(name: string) {

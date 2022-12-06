@@ -30,6 +30,7 @@ class NotebookView extends Note<Notebook[]> {
   render(data: Notebook[], activeNotebook?: string) {
     if (!data.length) {
       this._clear()
+      this.#addActiveClass(activeNotebook)
       return
     }
     this._data = data
