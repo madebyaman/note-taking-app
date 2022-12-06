@@ -20,7 +20,6 @@ class NotesView extends Note<Notetype[]> {
         const closestNote = e.target.closest('article')
         const id = closestNote?.getAttribute('data-noteid')
         if (id) {
-          this.#addActiveClassToNote(id)
           handler(id)
         }
       }

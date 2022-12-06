@@ -22,6 +22,45 @@ if (module.hot) {
   module.hot.accept()
 }
 
+function getPageAndNoteUrl(): { page: string | null; note: string | null } {
+  // Get the query string from the URL
+  const queryString = window.location.search
+
+  // Parse the query string using the URLSearchParams interface
+  const urlParams = new URLSearchParams(queryString)
+
+  // Get the value of the "page" and "note" parameters from the query string
+  const page = urlParams.get('page')
+  const note = urlParams.get('note')
+  return { page, note }
+}
+
+function refreshViews(): void {
+  init()
+  const { page, note } = getPageAndNoteUrl()
+  console.log('refreshed view', page, note)
+  if (page && note) {
+    // Show page like notebook, all notes, favorites, trash
+    // Render notebook view
+    notebookView.render(state.notebooks, page)
+    const categoryNotes = showNotesFromNotebook(page)
+    notesView.render({ notes: categoryNotes, activeNoteId: note })
+    // Also show that note
+    showNote({ type: 'RENDER_PREVIEW', id: note })
+    // Render note view
+  } else if (page) {
+    // Empty note view
+    // Page view
+    notebookView.render(state.notebooks, page)
+    const categoryNotes = showNotesFromNotebook(page)
+    notesView.render({ notes: categoryNotes })
+  } else {
+    // Render home view
+    notebookView.render(state.notebooks)
+    notesView.render({ notes: state.notes })
+  }
+}
+
 type ShowNoteProps =
   | { type: 'RENDER_EMPTY' }
   | { type: 'RENDER_EDITOR' | 'RENDER_PREVIEW'; id: string }
@@ -46,7 +85,18 @@ function showNote(props: ShowNoteProps) {
 }
 
 function onClickNote(id: string): void {
-  showNote({ id: id, type: 'RENDER_PREVIEW' })
+  // showNote({ id: id, type: 'RENDER_PREVIEW' })
+  // Create a new URLSearchParams object and set the "page" and "note" parameters
+  const urlParams = new URLSearchParams()
+  urlParams.set('note', id)
+
+  // Get the current URL and append the updated query string to it
+  const currentUrl = window.location.href
+  const newUrl = currentUrl + '&&' + urlParams.toString()
+
+  // Use the pushState() method of the window.history API to update the URL in the browser's address bar
+  window.history.pushState({}, '', newUrl)
+  refreshViews()
 }
 
 function renderEditorView(id: string) {
@@ -93,7 +143,7 @@ function init(): void {
     openHandler: notebookController,
   })
 }
-init()
+refreshViews()
 
 function addNewNote(notebookIdToAdd?: string): void {
   // 2. Add the note to state
@@ -140,10 +190,18 @@ function trashedNotesController() {
 }
 
 function notebookController(id: string) {
-  const notes = showNotesFromNotebook(id)
-  notesView.render({ notes, newNoteNotebookId: id })
-  showNote({ type: 'RENDER_EMPTY' })
+  // const notes = showNotesFromNotebook(id)
+  // notesView.render({ notes, newNoteNotebookId: id })
+  // showNote({ type: 'RENDER_EMPTY' })
+  // Redirect to new page
+  const urlParams = new URLSearchParams()
+  urlParams.set('page', id)
+  // Get the current URL and append the updated query string to it
+  const currentUrl = window.location.origin
+  const newUrl = currentUrl + '?' + urlParams.toString()
+  window.history.pushState({}, '', newUrl)
   // TODO when add new note option is clicked pass this id to it.
+  refreshViews()
 }
 
 function renameNotebookController(name: string, id: string) {
@@ -151,6 +209,7 @@ function renameNotebookController(name: string, id: string) {
   renameNotebook(name, id)
   // re-render the notebook view
   notebookView.render(state.notebooks)
+  // change the name for Notebook in all notes
 }
 
 function deleteNotebookController(id: string) {

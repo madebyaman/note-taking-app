@@ -138,7 +138,14 @@ export function renameNotebook(name: string, id: string) {
     } else return notebook
   })
 
+  const newNotes = state.notes.map((note) => {
+    if (note.notebookId === id) {
+      return { ...note, notebook: name }
+    } else return note
+  })
+
   state.notebooks = newNotebooks
+  state.notes = newNotes
 }
 
 export function deleteNotebook(id: string) {

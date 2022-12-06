@@ -10,7 +10,24 @@ type EventHandlerToNotebook = {
 class NotebookView extends Note<Notebook[]> {
   _parentElement = document.querySelector('ul.note-books')
 
-  render(data: Notebook[]) {
+  #addActiveClass(id?: string) {
+    this.#removeActiveClass()
+    let li: HTMLElement | null
+    if (id === 'all' || !id) {
+      li = document.querySelector('li.all-notes')
+    } else if (id === 'favorites') {
+      li = document.querySelector('li.favorite-notes')
+    } else if (id === 'trash') {
+      li = document.querySelector('li.trash-notes')
+    } else {
+      li = document.querySelector(`li[data-notebookid='${id}'`)
+    }
+    if (li) {
+      li.classList.add('active')
+    }
+  }
+
+  render(data: Notebook[], activeNotebook?: string) {
     if (!data.length) {
       this._clear()
       return
@@ -19,6 +36,7 @@ class NotebookView extends Note<Notebook[]> {
     const markup = this.#generateMarkup()
     this._clear()
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
+    this.#addActiveClass(activeNotebook)
   }
 
   // Add new notebook logic
@@ -144,7 +162,7 @@ class NotebookView extends Note<Notebook[]> {
 
   // Open category like Notes, Favorite logic
   addEventHandlerToNotes(handler: () => void) {
-    const notesCategory = document.querySelector('li.category-notes')
+    const notesCategory = document.querySelector('li.all-notes')
     if (notesCategory) {
       notesCategory.addEventListener('click', () => {
         this.#removeActiveClass()
@@ -155,7 +173,7 @@ class NotebookView extends Note<Notebook[]> {
   }
 
   addEventHandlerToFavorite(handler: () => void) {
-    const favoriteCategory = document.querySelector('li.category-favorite')
+    const favoriteCategory = document.querySelector('li.favorite-notes')
     if (favoriteCategory) {
       favoriteCategory.addEventListener('click', () => {
         this.#removeActiveClass()
@@ -166,7 +184,7 @@ class NotebookView extends Note<Notebook[]> {
   }
 
   addEventHandlerToTrash(handler: () => void) {
-    const trashCategory = document.querySelector('li.category-trash')
+    const trashCategory = document.querySelector('li.trash-notes')
     if (trashCategory) {
       trashCategory.addEventListener('click', () => {
         this.#removeActiveClass()
