@@ -4,8 +4,7 @@ import { Note as Notetype } from '../types'
 type RenderProps = {
   notes: Notetype[]
   activeNoteId?: string
-  newNoteNotebookId?: string
-  hideCreateNewNoteButton?: boolean
+  openNotebook?: string
 }
 
 class NotesView extends Note<Notetype[]> {
@@ -61,9 +60,9 @@ class NotesView extends Note<Notetype[]> {
   }
 
   render(props: RenderProps) {
-    const { notes, activeNoteId, newNoteNotebookId } = props
+    const { notes, activeNoteId, openNotebook } = props
     this._data = notes
-    this.#notebookId = newNoteNotebookId
+    this.#notebookId = openNotebook
     this._clear()
     const markup = this.#generateMarkup()
     this._parentElement?.insertAdjacentHTML('afterbegin', markup)
@@ -72,7 +71,7 @@ class NotesView extends Note<Notetype[]> {
     } else {
       this.#removeActiveClass()
     }
-    if (props.hideCreateNewNoteButton) {
+    if (props.openNotebook === 'trash') {
       this.#hideCreateNewNoteButton()
     } else {
       this.#showCreateNewNoteButton()

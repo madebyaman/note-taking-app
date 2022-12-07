@@ -62,7 +62,11 @@ export function loadNotes(props?: {
 
 export function addNewDefaultNote(notebookIdToAdd?: string): string {
   let notebook: Notebook | undefined
-  if (notebookIdToAdd) {
+  if (
+    notebookIdToAdd &&
+    notebookIdToAdd !== 'all' &&
+    notebookIdToAdd !== 'favorites'
+  ) {
     notebook = state.notebooks.find(
       (notebook) => notebook.id === notebookIdToAdd
     )
@@ -74,7 +78,7 @@ export function addNewDefaultNote(notebookIdToAdd?: string): string {
     text: '',
     notebookId: notebook?.id || null,
     inTrash: false,
-    favorite: false,
+    favorite: notebookIdToAdd === 'favorites' ? true : false,
     createdDate: new Date(Date.now()).toISOString(),
   }
   state.notes.push(newNote)

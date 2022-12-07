@@ -38,17 +38,18 @@ function navigateToHome(): void {
 
 function getNotesForPage(page: string): Note[] {
   let notes: Note[]
-  if (!checkNotebook(page)) {
-    // It means category is invalid.
-    navigateToHome()
-    refreshViews()
-    return []
-  } else if (page === 'all') {
+  if (page === 'all') {
     notes = state.notes
   } else if (page === 'favorites') {
     notes = showFavoriteNotes()
   } else if (page === 'trash') {
     notes = showTrashedNotes()
+  } else if (!checkNotebook(page)) {
+    // It means category is invalid.
+    console.log('DONT Tell me you are here')
+    navigateToHome()
+    refreshViews()
+    return []
   } else if (page) {
     notes = showNotesFromNotebook(page)
   } else {
@@ -57,25 +58,23 @@ function getNotesForPage(page: string): Note[] {
   return notes
 }
 
+// Refresh views
 function refreshViews(): void {
-  console.log(arguments.callee.caller)
   const { page, note } = getPageAndNoteUrl()
   console.log('refreshed view', page, note)
   if (page && note) {
-    // Show page like notebook, all notes, favorites, trash
-    // Render notebook view
     notebookView.render(state.notebooks, page)
-    notesView.render({ notes: getNotesForPage(page), activeNoteId: note })
-    // Also show that note
+    notesView.render({
+      notes: getNotesForPage(page),
+      activeNoteId: note,
+      openNotebook: page,
+    })
     showNote({ type: 'RENDER_PREVIEW', id: note })
-    // Render note view
-  } else if (page) {
-    // Empty note view
-    // Page view
+  } else if (page && !note) {
     notebookView.render(state.notebooks, page)
-    notesView.render({ notes: getNotesForPage(page) })
+    notesView.render({ notes: getNotesForPage(page), openNotebook: page })
     showNote({ type: 'RENDER_EMPTY' })
-  } else if (note) {
+  } else if (!page && note) {
     console.log('only note')
     notebookView.render(state.notebooks, 'all')
     notesView.render({ notes: state.notes, activeNoteId: note })
@@ -111,6 +110,7 @@ function showNote(props: ShowNoteProps) {
   noteView.addStarHandler(favoriteNoteController)
 }
 
+// Navigates to the note
 function onClickNote(id: string): void {
   const queryString = window.location.search
   const oldParams = new URLSearchParams(queryString)
@@ -142,7 +142,6 @@ function renderEditorView(id: string) {
 
 function renderNoteView(id: string): void {
   const note = state.notes.find((note) => note.id === id)
-  console.log(note)
   if (note) {
     noteView.render({
       type: 'RENDER_PREVIEW',
@@ -158,10 +157,6 @@ function renderNoteView(id: string): void {
 
 function init(): void {
   loadNotes()
-  // 1. Render notebook view
-  notebookView.render(state.notebooks)
-  // 2. Render notes view
-  notesView.render({ notes: showAllNotes() })
   // 3. Event handler in notes.
   notesView.addClickEventHandlerToOpen(onClickNote)
   // 4. Event handler for new note
@@ -177,25 +172,32 @@ function init(): void {
 refreshViews()
 init()
 
+/**
+ * Controller function to add new note. It does few things
+ * 1. Tells model to add new note
+ * 2. Navigate to new note using `onClickNote`
+ * 3. Refresh view
+ */
 function addNewNote(notebookIdToAdd?: string): void {
-  // 2. Add the note to state
   const id = addNewDefaultNote(notebookIdToAdd)
-  // 3. Rerender notesView
-  notesView.render({ notes: showAllNotes(), activeNoteId: id })
-  // 4. Open note in note editor
-  showNote({ id, type: 'RENDER_EDITOR' })
+  onClickNote(id)
+  refreshViews()
 }
 
+/**
+ * Delete note controller. That:
+ * 1. Deletes the note using the model function
+ * 2. RE-renders the notesview with no active note.
+ * 3. Renders the empty view for note.
+ */
 function deleteNoteController(id: string) {
   deleteNote(id)
-  // Re render note view
   notesView.render({ notes: showAllNotes() })
   showNote({ type: 'RENDER_EMPTY' })
 }
 
 function favoriteNoteController(id: string) {
   starNote(id)
-  // Re render views
   notesView.render({ notes: showAllNotes(), activeNoteId: id })
   const note = state.notes.find((note) => note.id === id)
   if (note) {
@@ -204,9 +206,8 @@ function favoriteNoteController(id: string) {
 }
 
 function trashedNotesController() {
-  notesView.render({ notes: showTrashedNotes(), hideCreateNewNoteButton: true })
+  notesView.render({ notes: showTrashedNotes(), openNotebook: 'trash' })
   showNote({ type: 'RENDER_EMPTY' })
-  // Add handler to recover deleted note
 }
 
 function notebookController(id: string) {
@@ -219,17 +220,12 @@ function notebookController(id: string) {
 }
 
 function renameNotebookController(name: string, id: string) {
-  // call model function to rename the notebook
   renameNotebook(name, id)
-  // re-render the notebook view
   refreshViews()
-  // change the name for Notebook in all notes
 }
 
 function deleteNotebookController(id: string) {
-  // call model function to rename the notebook
   deleteNotebook(id)
-  // re-render the notebook view
   refreshViews()
 }
 

@@ -64,7 +64,7 @@ class NotebookView extends Note<Notebook[]> {
     input.type = 'text'
     input.name = 'new-notebook'
     input.placeholder = 'Notebook Name'
-    input.autofocus = true
+    input.focus()
     form.appendChild(input)
     form.addEventListener('submit', (e) => {
       e.preventDefault()
