@@ -34,6 +34,7 @@ export function loadNotes(props?: {
 }): void {
   // If not, get sample note from fs
   if (!props) {
+    state.notebooks = defaultNotebooks
     const newNotes: Note[] = defaultNotes.map((note) => {
       const title = getTitleOfNote(note.text)
       const notebook = getNotebookFromId(note.notebookId, defaultNotebooks)
@@ -41,7 +42,6 @@ export function loadNotes(props?: {
       return { title, notebook, inTrash, ...note }
     })
     state.notes = newNotes
-    state.notebooks = defaultNotebooks
   } else {
     const { notes, notebooks } = props
     // else set state to props

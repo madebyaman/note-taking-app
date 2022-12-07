@@ -156,7 +156,6 @@ function renderNoteView(id: string): void {
 }
 
 function init(): void {
-  loadNotes()
   // 3. Event handler in notes.
   notesView.addClickEventHandlerToOpen(onClickNote)
   // 4. Event handler for new note
@@ -169,6 +168,7 @@ function init(): void {
     openHandler: notebookController,
   })
 }
+loadNotes()
 refreshViews()
 init()
 
@@ -176,12 +176,10 @@ init()
  * Controller function to add new note. It does few things
  * 1. Tells model to add new note
  * 2. Navigate to new note using `onClickNote`
- * 3. Refresh view
  */
 function addNewNote(notebookIdToAdd?: string): void {
   const id = addNewDefaultNote(notebookIdToAdd)
   onClickNote(id)
-  refreshViews()
 }
 
 /**
