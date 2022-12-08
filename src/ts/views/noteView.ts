@@ -1,5 +1,5 @@
 import Note from './Note'
-import { Note as NoteType } from '../types'
+import { Note as NoteType, Notebook } from '../types'
 import svg from '../../img/empty-note.svg'
 import marked from 'marked'
 
@@ -11,18 +11,34 @@ type NoteProps =
       type: 'RENDER_PREVIEW' | 'RENDER_EDITOR'
       data: NoteType
       recoverNoteHandler: (id: string) => void
+      notebooks: Notebook[]
     }
 
 class NoteView extends Note<NoteType> {
   _parentElement = document.querySelector('.notes-browser')
   #type: 'RENDER_PREVIEW' | 'RENDER_EDITOR' | 'RENDER_EMPTY'
 
-  addSaveHandler(handler: (val: string, id: string) => void) {
+  addSaveHandler(
+    saveHandler: (
+      val: string,
+      id: string,
+      notebookId: string | undefined
+    ) => void
+  ) {
+    const selectedOption = document.querySelector(
+      `option[value="${this._data?.notebookId}"]`
+    )
+    if (selectedOption && selectedOption instanceof HTMLOptionElement) {
+      selectedOption.selected = true
+    }
     const saveButton = document.querySelector('button.save')
     if (saveButton) {
       saveButton.addEventListener('click', () => {
         if (!this._data) return console.error('No data passed')
-        handler(this._data?.text || '', this._data.id)
+        const selectEl = document.getElementById('change-category')
+        if (selectEl) {
+          saveHandler(this._data?.text || '', this._data.id, selectEl.value)
+        }
       })
     }
   }
@@ -82,8 +98,22 @@ class NoteView extends Note<NoteType> {
     }
   }
 
+  #addOptionsToSelectNotebook(notebooks: Notebook[]): void {
+    const markup = notebooks
+      .map((notebook) => {
+        const name = notebook.name
+        return `<option value="${notebook.id}">${
+          name.charAt(0).toUpperCase() + notebook.name.slice(1)
+        }</option>`
+      })
+      .join('')
+    const selectEl = document.getElementById('change-category')
+    if (selectEl) selectEl.innerHTML = markup
+  }
+
   #renderIcons() {
     const markup = `
+<div class="flex">
 <button class="icon star"></button>
             <button class="icon preview-editor">
             </button>
@@ -119,6 +149,13 @@ class NoteView extends Note<NoteType> {
                 />
               </svg>
             </button>
+            </div>
+            <div class="flex">
+              <label for="select-category">Category:</label>
+              <select id="change-category">
+              </select>
+              <button class="save-note-button">Save</button>
+            </div>
     `
     const parentEl = document.querySelector('.note-settings-bar')
     if (!parentEl) return
@@ -213,6 +250,7 @@ class NoteView extends Note<NoteType> {
         this.#renderDeletedNoteMessage()
         this.#addRecoverNoteHandler(props.recoverNoteHandler)
       }
+      this.#addOptionsToSelectNotebook(props.notebooks)
     }
   }
 

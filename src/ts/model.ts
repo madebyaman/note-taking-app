@@ -210,3 +210,23 @@ export function checkIfNotebookIdValid(id: string) {
 export function checkIfNoteIdValid(id: string): boolean {
   return state.notes.some((note) => note.id === id)
 }
+
+export function changeCategoryOfNote(
+  noteId: string,
+  notebookId: string | undefined
+) {
+  const notebook = state.notebooks.find(
+    (notebook) => notebook.id === notebookId
+  )
+  if (!notebook) return
+  const newNotes = state.notes.map((note) => {
+    if (note.id === noteId) {
+      return {
+        ...note,
+        notebook: notebook.name,
+        notebookId: notebook.id,
+      }
+    } else return note
+  })
+  state.notes = newNotes
+}

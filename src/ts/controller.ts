@@ -1,6 +1,7 @@
 import {
   addNewDefaultNote,
   addNewNotebook,
+  changeCategoryOfNote,
   checkIfNotebookIdValid,
   checkIfNoteIdValid,
   deleteNote,
@@ -175,6 +176,7 @@ function renderEditorView(note: Note) {
     type: 'RENDER_EDITOR',
     recoverNoteHandler: recoverDeletedNote,
     data: note,
+    notebooks: state.notebooks,
   })
 }
 
@@ -184,6 +186,7 @@ function renderNoteView(note: Note): void {
     type: 'RENDER_PREVIEW',
     data: note,
     recoverNoteHandler: recoverDeletedNote,
+    notebooks: state.notebooks,
   })
 }
 
@@ -278,7 +281,12 @@ function recoverDeletedNote(id: string) {
   trashedNotesController()
 }
 
-function saveNotesAndRefresh(val: string, id: string) {
+function saveNotesAndRefresh(
+  val: string,
+  id: string,
+  notebookId: string | undefined
+) {
   saveNotes(val, id)
+  changeCategoryOfNote(id, notebookId)
   refreshViews()
 }
