@@ -172,13 +172,14 @@ export function deleteNotebook(id: string) {
   state.notebooks = newNotebooks
 }
 
-export function addNewNotebook(name: string) {
+export function addNewNotebook(name: string): string {
   const newNotebook = {
     name,
     id: v4(),
   }
 
   state.notebooks.push(newNotebook)
+  return newNotebook.id
 }
 
 export function showTrashedNotes(): Note[] {
@@ -201,6 +202,10 @@ export function recoverNote(id: string): void {
   state.notes = newNotes
 }
 
-export function checkNotebook(id: string) {
+export function checkIfNotebookIdValid(id: string) {
   return state.notebooks.some((notebook) => notebook.id === id)
+}
+
+export function checkIfNoteIdValid(id: string): boolean {
+  return state.notes.some((note) => note.id === id)
 }
