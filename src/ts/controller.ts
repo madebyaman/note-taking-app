@@ -40,7 +40,7 @@ function ifNotebookUrlInvalid(id: string): void {
     id !== 'all' &&
     id !== 'favorites' &&
     id !== 'trash' &&
-    checkIfNotebookIdValid(id)
+    !checkIfNotebookIdValid(id)
   ) {
     window.history.pushState({}, '', window.location.origin)
   }
@@ -68,7 +68,7 @@ function ifNoteUrlInvalid(id: string): void {
 function getNotesForPage(page: string): Note[] {
   let notes: Note[]
   if (page === 'all') {
-    notes = state.notes
+    notes = showAllNotes()
   } else if (page === 'favorites') {
     notes = showFavoriteNotes()
   } else if (page === 'trash') {
@@ -125,12 +125,15 @@ type ShowNoteProps =
  * 3. adds delete, save and star handlers
  */
 function showNote(props: ShowNoteProps) {
-  if (props.type === 'RENDER_EMPTY') {
+  let note: Note | undefined
+  if (props.type !== 'RENDER_EMPTY' && props.notes) {
+    note = props.notes.find((note) => note.id === props.id)
+  }
+  if (props.type === 'RENDER_EMPTY' || !note) {
     noteView.render({ type: 'RENDER_EMPTY' })
     return
   }
-  const { type, id, notes } = props
-  const note = notes.find((note) => note.id === id)
+  const { type } = props
   if (type === 'RENDER_EDITOR') {
     // Editor view
     if (note) renderEditorView(note)
@@ -144,7 +147,8 @@ function showNote(props: ShowNoteProps) {
   noteView.addStarHandler(favoriteNoteController)
 }
 
-// Navigates to the note URl
+/**  Navigates to the given note URL
+ */
 function onClickNote(id: string): void {
   const queryString = window.location.search
   const oldParams = new URLSearchParams(queryString)
@@ -212,7 +216,9 @@ init()
 function addNewNote(notebookIdToAdd?: string): void {
   const id = addNewDefaultNote(notebookIdToAdd)
   onClickNote(id)
-  showNote({ type: 'RENDER_EDITOR', id })
+  const { page } = getPageAndNoteUrl()
+  const notes = getNotesForPage(page || 'all')
+  showNote({ type: 'RENDER_EDITOR', id, notes })
 }
 
 /**
