@@ -11,6 +11,18 @@ class NotesView extends Note<Notetype[]> {
   _parentElement = document.querySelector('.notes__container-notes')
   #notebookId?: string
 
+  addSearchEventHandler(
+    handler: (val: string, notebookId: string | undefined) => void
+  ) {
+    const searchInput = document.querySelector('input.search-notes')
+    if (!searchInput) return
+    searchInput.addEventListener('input', (e) => {
+      if (e.target && e.target instanceof HTMLInputElement) {
+        handler(e.target.value, this.#notebookId)
+      }
+    })
+  }
+
   addClickEventHandlerToOpen(handler: (id: string) => void) {
     const notesListContainer = document.querySelector('.notes__container-notes')
     notesListContainer?.addEventListener('click', (e) => {

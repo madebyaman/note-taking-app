@@ -200,6 +200,7 @@ function init(): void {
   notesView.addClickEventHandlerToOpen(onClickNote)
   // 4. Event handler for new note
   notesView.addHandlerForNewNote(addNewNote)
+  notesView.addSearchEventHandler(searchNotes)
   // 6. Event handler for notebook
   notebookView.addEventHandlerToAddNotebookButton(newNotebookController)
   notebookView.addEventHandlersToNotebook({
@@ -289,4 +290,16 @@ function saveNotesAndRefresh(
   saveNotes(val, id)
   changeCategoryOfNote(id, notebookId)
   refreshViews()
+}
+
+function searchNotes(val: string, notebookId: string | undefined) {
+  const notes = getNotesForPage(notebookId || 'all')
+  const newNotes = notes.filter((note) =>
+    note.text.toLowerCase().includes(val.toLowerCase())
+  )
+  notesView.render({
+    notes: newNotes,
+    openNotebook: notebookId,
+  })
+  showNote({ type: 'RENDER_EMPTY' })
 }
