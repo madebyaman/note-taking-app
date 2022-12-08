@@ -48,14 +48,15 @@ function ifNotebookUrlInvalid(id: string): void {
 
 // If note url is invalid, navigate to previous `page` or else home
 function ifNoteUrlInvalid(id: string): void {
-  if (checkIfNoteIdValid(id)) {
+  if (!checkIfNoteIdValid(id)) {
     const queryString = window.location.search
     const urlParams = new URLSearchParams(queryString)
     const page = urlParams.get('page')
     if (page) {
       // Put user to previous page URL
-      urlParams.set('page', page)
-      const newUrl = window.location.origin + '?' + urlParams.toString()
+      const newUrlParams = new URLSearchParams()
+      newUrlParams.set('page', page)
+      const newUrl = window.location.origin + '?' + newUrlParams.toString()
       window.history.pushState({}, '', newUrl)
     } else {
       // Navigate to home
@@ -86,6 +87,7 @@ function refreshViews(): void {
   const { page, note } = getPageAndNoteUrl()
   console.log('refreshed view', page, note)
   if (page && note) {
+    console.log('Both values')
     ifNoteUrlInvalid(note)
     ifNotebookUrlInvalid(page)
     notebookView.render(state.notebooks, page)
@@ -143,7 +145,7 @@ function showNote(props: ShowNoteProps) {
   }
   // 5. Event handlers to saving, deleting and toggling favorites
   noteView.addDeleteHandler(deleteNoteController)
-  noteView.addSaveHandler(saveNotes)
+  noteView.addSaveHandler(saveNotesAndRefresh)
   noteView.addStarHandler(favoriteNoteController)
 }
 
@@ -274,4 +276,9 @@ function newNotebookController(name: string) {
 function recoverDeletedNote(id: string) {
   recoverNote(id)
   trashedNotesController()
+}
+
+function saveNotesAndRefresh(val: string, id: string) {
+  saveNotes(val, id)
+  refreshViews()
 }

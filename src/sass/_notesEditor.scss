@@ -5,11 +5,15 @@ Notes Editor
 */
 
 .notes-editor {
-  width: 100%;
-  display: block;
-  font-size: 17px;
-  border: 0;
+  width: 90%;
+  font-size: 16px;
+  font-family: inherit;
   height: 100%;
+  padding: 20px;
+  margin: 20px 0;
+  resize: none;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
 }
 
 .notes-browser__empty img {

@@ -90,6 +90,7 @@ export function saveNotes(val: string, id: string) {
     if (note.id === id) {
       return {
         ...note,
+        title: getTitleOfNote(val),
         text: val,
       }
     } else return note
