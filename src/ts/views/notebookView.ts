@@ -157,7 +157,6 @@ class NotebookView extends Note<Notebook[]> {
       if (e.target instanceof HTMLElement || e.target instanceof SVGElement) {
         const closestButton = e.target.closest('button')
         const closestLi = e.target.closest('li')
-        console.log(closestButton)
         if (closestButton?.classList.contains('notebook__button')) {
           // Run open notebook handler
           this.#openNotebookEventHandler(closestLi, props.openHandler)

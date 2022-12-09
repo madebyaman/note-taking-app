@@ -22,9 +22,9 @@ import notebookView from './views/notebookView'
 import notesView from './views/notesView'
 import noteView from './views/noteView'
 
-if (module.hot) {
-  module.hot.accept()
-}
+// if (module.hot) {
+//   module.hot.accept()
+// }
 
 // Get page and note id from the URL
 function getPageAndNoteUrl(): { page: string | null; note: string | null } {
@@ -86,9 +86,7 @@ function getNotesForPage(page: string): Note[] {
 // Refresh views
 function refreshViews(): void {
   const { page, note } = getPageAndNoteUrl()
-  console.log('refreshed view', page, note)
   if (page && note) {
-    console.log('Both values')
     ifNoteUrlInvalid(note)
     ifNotebookUrlInvalid(page)
     notebookView.render(state.notebooks, page)
@@ -106,7 +104,6 @@ function refreshViews(): void {
     showNote({ type: 'RENDER_EMPTY' })
   } else if (!page && note) {
     ifNoteUrlInvalid(note)
-    console.log('only note')
     notebookView.render(state.notebooks, 'all')
     notesView.render({ notes: state.notes, activeNoteId: note })
     showNote({ type: 'RENDER_PREVIEW', id: note, notes: state.notes })
@@ -284,7 +281,6 @@ function saveNotesAndRefresh(
   id: string,
   notebookId: string | undefined
 ) {
-  console.log('saving')
   saveNotes(val, id)
   changeCategoryOfNote(id, notebookId)
   refreshViews()

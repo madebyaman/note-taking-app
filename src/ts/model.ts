@@ -41,7 +41,7 @@ function newNotes() {
 export async function loadNotes() {
   // If not, get sample note from fs
   try {
-    Promise.all([
+    await Promise.all([
       getNotesFromLocalStorage(),
       getNotebooksFromLocalStorage(),
     ]).then(([notes, notebooks]) => {
