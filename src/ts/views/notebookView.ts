@@ -97,12 +97,12 @@ class NotebookView extends Note<Notebook[]> {
     if (!li) {
       return console.error('No list item')
     }
-    const parentEl = li.querySelector('.notebook__button')
     const el = li.querySelector('.notebook__name')
     let val: string | null = ''
     if (el) {
       val = el.textContent
       el.remove()
+      li.innerHTML = ''
     }
     const form = document.createElement('form')
     form.classList.add('notebook__name-form')
@@ -118,10 +118,7 @@ class NotebookView extends Note<Notebook[]> {
       if (!id) return
       handler(input.value, id)
     })
-    parentEl?.appendChild(form)
-    if (form.firstChild && form.firstChild instanceof HTMLInputElement) {
-      form.firstChild?.focus()
-    }
+    li.insertAdjacentElement('beforebegin', form)
   }
 
   // Delete notebook logic
@@ -148,6 +145,7 @@ class NotebookView extends Note<Notebook[]> {
       if (e.target instanceof HTMLElement || e.target instanceof SVGElement) {
         const closestButton = e.target.closest('button')
         const closestLi = e.target.closest('li')
+        console.log(closestButton)
         if (closestButton?.classList.contains('notebook__button')) {
           // Run open notebook handler
           this.#openNotebookEventHandler(closestLi, props.openHandler)
