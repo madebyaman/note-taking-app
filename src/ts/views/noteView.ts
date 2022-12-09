@@ -35,8 +35,8 @@ class NoteView extends Note<NoteType> {
     if (saveButton) {
       saveButton.addEventListener('click', () => {
         if (!this._data) return console.error('No data passed')
-        const selectEl = document.getElementById('change-category')
-        if (selectEl) {
+        const selectEl = document.getElementById('change-notebook')
+        if (selectEl instanceof HTMLInputElement) {
           saveHandler(
             this._data?.text || '',
             this._data.id,
@@ -111,33 +111,17 @@ class NoteView extends Note<NoteType> {
         }</option>`
       })
       .join('')
-    const selectEl = document.getElementById('change-category')
+    const selectEl = document.getElementById('change-notebook')
     if (selectEl) selectEl.insertAdjacentHTML('afterbegin', markup)
   }
 
   #renderIcons() {
     const markup = `
 <div class="flex">
-<button class="icon star"></button>
+<button class="icon star" title="Add to favorites"></button>
             <button class="icon preview-editor">
             </button>
-            <button class="save icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-                />
-              </svg>
-            </button>
-            <button class="delete icon">
+            <button class="delete icon" title="Delete Note">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -155,11 +139,11 @@ class NoteView extends Note<NoteType> {
             </button>
             </div>
             <div class="flex">
-              <label for="select-category">Notebook:</label>
-              <select id="change-category">
+              <label for="change-notebook">Notebook:</label>
+              <select id="change-notebook">
               <option value="">Select a notebook</option>
               </select>
-              <button class="save-note-button">Save</button>
+              <button class="save">Save</button>
             </div>
     `
     const parentEl = document.querySelector('.note-settings-bar')
@@ -169,12 +153,18 @@ class NoteView extends Note<NoteType> {
 
   renderStarIcon(favorite: boolean) {
     let iconMarkup: string
+    let title: string
     if (favorite) {
       iconMarkup = this.#starFilledIcon()
+      title = 'Unfavorite'
     } else {
       iconMarkup = this.#starOutlineIcon()
+      title = 'Add to favorites'
     }
     const parentEl = document.querySelector('button.star.icon')
+    if (parentEl instanceof HTMLButtonElement) {
+      parentEl.title = title
+    }
     if (!parentEl) return
     parentEl.innerHTML = ''
     parentEl?.insertAdjacentHTML('afterbegin', iconMarkup)
@@ -182,14 +172,20 @@ class NoteView extends Note<NoteType> {
 
   #renderPreviewOrCodeIcon() {
     let markupIcon: string
+    let title: string
     if (this.#type === 'RENDER_PREVIEW') {
       markupIcon = this.#previewIcon()
+      title = 'View markdown'
     } else if (this.#type === 'RENDER_EDITOR') {
       markupIcon = this.#codeIcon()
+      title = 'Show preview'
     } else {
       throw new Error('Editor is empty')
     }
     const parentEl = document.querySelector('button.preview-editor')
+    if (parentEl instanceof HTMLButtonElement) {
+      parentEl.title = title
+    }
     if (!parentEl) return
     parentEl.innerHTML = ''
     parentEl.insertAdjacentHTML('afterbegin', markupIcon)

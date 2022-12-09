@@ -37,3 +37,66 @@ Notes Editor
 #notes-editor {
   height: 100%;
 }
+
+.note-settings-bar {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: space-between;
+
+  svg {
+    width: 19px;
+    color: #4A5568;
+    height: 19px;
+  }
+
+  .flex {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  button,
+  select,
+  label {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.9);
+  }
+
+  select {
+    // lock appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500
+    display: block;
+    width: 100%;
+    background-color: #eee;
+    border: 1px solid;
+    border-color: #eee;
+    padding: 6px 8px;
+    border-radius: 5px;
+
+    &:focus {
+      outline: none;
+      background-color: white;
+      border-color: gray;
+    }
+
+  }
+}
+
+button.save {
+  // bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline
+  background-color: #4299E1;
+  color: white;
+  font-weight: bold;
+  padding: 7px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 0;
+
+  &:hover {
+    background-color: #2B6CB0;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
