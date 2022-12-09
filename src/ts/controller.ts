@@ -214,9 +214,6 @@ function init(): void {
     if (removeAddNoteListener) removeAddNoteListener()
   })
 }
-loadNotes()
-refreshViews()
-init()
 
 /**
  * Controller function to add new note. It does few things
@@ -249,11 +246,6 @@ function favoriteNoteController(id: string) {
   refreshViews()
 }
 
-function trashedNotesController() {
-  notesView.render({ notes: showTrashedNotes(), openNotebook: 'trash' })
-  showNote({ type: 'RENDER_EMPTY' })
-}
-
 // when notebook button is clicked, move to ?page=notebook url
 function notebookController(id: string) {
   const urlParams = new URLSearchParams()
@@ -284,7 +276,7 @@ function newNotebookController(name: string) {
 
 function recoverDeletedNote(id: string) {
   recoverNote(id)
-  trashedNotesController()
+  refreshViews()
 }
 
 function saveNotesAndRefresh(
@@ -309,3 +301,11 @@ function searchNotes(val: string, notebookId: string | undefined) {
   })
   showNote({ type: 'RENDER_EMPTY' })
 }
+
+async function start() {
+  await loadNotes()
+  refreshViews()
+  init()
+}
+
+start()

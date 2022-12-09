@@ -28,35 +28,29 @@ function getNotebookFromId(
   return notebook?.name
 }
 
-export function loadNotes(props?: {
-  notes: NoteWithoutTitleAndNotebook[]
-  notebooks: Notebook[]
-}): void {
+function newNotes() {
+  const newNotes: Note[] = defaultNotes.map((note) => {
+    const title = getTitleOfNote(note.text)
+    const notebook = getNotebookFromId(note.notebookId, defaultNotebooks)
+    const inTrash = false
+    return { title, notebook, inTrash, ...note }
+  })
+  return newNotes
+}
+
+export async function loadNotes() {
   // If not, get sample note from fs
-  if (!props) {
+  try {
+    Promise.all([
+      getNotesFromLocalStorage(),
+      getNotebooksFromLocalStorage(),
+    ]).then(([notes, notebooks]) => {
+      state.notes = notes
+      state.notebooks = notebooks
+    })
+  } catch (e) {
+    state.notes = newNotes()
     state.notebooks = defaultNotebooks
-    const newNotes: Note[] = defaultNotes.map((note) => {
-      const title = getTitleOfNote(note.text)
-      const notebook = getNotebookFromId(note.notebookId, defaultNotebooks)
-      const inTrash = false
-      return { title, notebook, inTrash, ...note }
-    })
-    state.notes = newNotes
-  } else {
-    const { notes, notebooks } = props
-    // else set state to props
-    state.notebooks = notebooks
-    const newNotes: Note[] = notes.map((note) => {
-      const title = getTitleOfNote(note.text)
-      let notebook
-      if (note.notebookId) {
-        notebook = getNotebookFromId(note.notebookId, notebooks)
-      } else {
-        notebook = undefined
-      }
-      return { title, notebook, ...note }
-    })
-    state.notes = newNotes
   }
 }
 
@@ -96,6 +90,7 @@ export function saveNotes(val: string, id: string) {
     } else return note
   })
   state.notes = newNotes
+  saveToLocalStorage()
 }
 
 export function starNote(id: string) {
@@ -108,6 +103,7 @@ export function starNote(id: string) {
     } else return note
   })
   state.notes = newNotes
+  saveToLocalStorage()
 }
 
 export function deleteNote(id: string) {
@@ -123,6 +119,7 @@ export function deleteNote(id: string) {
     }
   })
   state.notes = newNotes
+  saveToLocalStorage()
 }
 
 export function showFavoriteNotes() {
@@ -151,6 +148,7 @@ export function renameNotebook(name: string, id: string) {
 
   state.notebooks = newNotebooks
   state.notes = newNotes
+  saveToLocalStorage()
 }
 
 export function deleteNotebook(id: string) {
@@ -171,6 +169,7 @@ export function deleteNotebook(id: string) {
   // Next, delete notebook
   const newNotebooks = state.notebooks.filter((notebook) => notebook.id !== id)
   state.notebooks = newNotebooks
+  saveToLocalStorage()
 }
 
 export function addNewNotebook(name: string): string {
@@ -201,6 +200,7 @@ export function recoverNote(id: string): void {
     } else return note
   })
   state.notes = newNotes
+  saveToLocalStorage()
 }
 
 export function checkIfNotebookIdValid(id: string) {
@@ -229,4 +229,31 @@ export function changeCategoryOfNote(
     } else return note
   })
   state.notes = newNotes
+  saveToLocalStorage()
+}
+
+function saveToLocalStorage() {
+  const notes = showAllNotes()
+  window.localStorage.setItem('notes', JSON.stringify(notes))
+  window.localStorage.setItem('notebooks', JSON.stringify(state.notebooks))
+}
+
+async function getNotesFromLocalStorage(): Promise<Note[]> {
+  return new Promise((resolve, reject) => {
+    const notes = window.localStorage.getItem('notes')
+    if (notes) {
+      const parsedNotes = JSON.parse(notes)
+      resolve(parsedNotes)
+    } else reject('No notes')
+  })
+}
+
+async function getNotebooksFromLocalStorage(): Promise<Notebook[]> {
+  return new Promise((resolve, reject) => {
+    const notebooks = window.localStorage.getItem('notebooks')
+    if (notebooks) {
+      const parsedNotebooks = JSON.parse(notebooks)
+      resolve(parsedNotebooks)
+    } else reject('no notebooks')
+  })
 }
