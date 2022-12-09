@@ -36,7 +36,7 @@ class NoteView extends Note<NoteType> {
       saveButton.addEventListener('click', () => {
         if (!this._data) return console.error('No data passed')
         const selectEl = document.getElementById('change-notebook')
-        if (selectEl instanceof HTMLInputElement) {
+        if (selectEl instanceof HTMLSelectElement) {
           saveHandler(
             this._data?.text || '',
             this._data.id,
@@ -231,6 +231,11 @@ class NoteView extends Note<NoteType> {
     }
   }
 
+  #hideBottomActionBar() {
+    const bottomBar = document.querySelector('.note-settings-bar')
+    if (bottomBar) bottomBar.innerHTML = ''
+  }
+
   render(props: NoteProps) {
     this.#type = props.type
     if (props.type === 'RENDER_EMPTY') {
@@ -250,6 +255,8 @@ class NoteView extends Note<NoteType> {
       if (this._data.inTrash) {
         this.#renderDeletedNoteMessage()
         this.#addRecoverNoteHandler(props.recoverNoteHandler)
+        this.#hideBottomActionBar()
+        return
       }
       this.#addOptionsToSelectNotebook(props.notebooks)
     }

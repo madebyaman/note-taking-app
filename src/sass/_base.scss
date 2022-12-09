@@ -8,3 +8,12 @@ body {
   font-family: var(--font-family);
   margin: 0;
 }
+
+@mixin simple-button {
+  color: white;
+  font-weight: bold;
+  padding: 7px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 0;
+}

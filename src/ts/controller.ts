@@ -292,6 +292,7 @@ function saveNotesAndRefresh(
   id: string,
   notebookId: string | undefined
 ) {
+  console.log('saving')
   saveNotes(val, id)
   changeCategoryOfNote(id, notebookId)
   refreshViews()
