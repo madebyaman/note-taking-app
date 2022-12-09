@@ -197,16 +197,21 @@ function renderNoteView(note: Note): void {
  */
 function init(): void {
   // 3. Event handler in notes.
-  notesView.addClickEventHandlerToOpen(onClickNote)
+  const removeOpenNoteListener = notesView.openNote(onClickNote)
   // 4. Event handler for new note
-  notesView.addHandlerForNewNote(addNewNote)
-  notesView.addSearchEventHandler(searchNotes)
+  const removeAddNoteListener = notesView.addNewNote(addNewNote)
+  const removeSearch = notesView.searchForNotes(searchNotes)
   // 6. Event handler for notebook
   notebookView.addEventHandlerToAddNotebookButton(newNotebookController)
   notebookView.addEventHandlersToNotebook({
     deleteHandler: deleteNotebookController,
     renameHandler: renameNotebookController,
     openHandler: notebookController,
+  })
+  window.addEventListener('beforeunload', () => {
+    if (removeSearch) removeSearch()
+    if (removeOpenNoteListener) removeOpenNoteListener()
+    if (removeAddNoteListener) removeAddNoteListener()
   })
 }
 loadNotes()

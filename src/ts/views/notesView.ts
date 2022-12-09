@@ -11,32 +11,51 @@ class NotesView extends Note<Notetype[]> {
   _parentElement = document.querySelector('.notes__container-notes')
   #notebookId?: string
 
-  addSearchEventHandler(
+  searchForNotes(
     handler: (val: string, notebookId: string | undefined) => void
   ) {
     const searchInput = document.querySelector('input.search-notes')
     if (!searchInput) return
-    searchInput.addEventListener('input', (e) => {
+    const cb = (e: Event) => {
       if (e.target && e.target instanceof HTMLInputElement) {
-        handler(e.target.value, this.#notebookId)
+        return handler(e.target.value, this.#notebookId)
       }
-    })
+    }
+    searchInput.addEventListener('input', cb)
+    return () => searchInput.removeEventListener('input', cb)
   }
 
-  addClickEventHandlerToOpen(handler: (id: string) => void) {
-    const notesListContainer = document.querySelector('.notes__container-notes')
-    notesListContainer?.addEventListener('click', (e) => {
+  addNewNote(handler: (notebookIdToAdd?: string) => void) {
+    const cb = () => {
+      if (this.#notebookId) {
+        handler(this.#notebookId)
+      } else {
+        handler()
+      }
+    }
+    const newNoteButton = document.querySelector('.add-new-note')
+    if (!newNoteButton) return
+    newNoteButton.addEventListener('click', cb)
+    return () => newNoteButton.removeEventListener('click', cb)
+  }
+
+  openNote(handler: (id: string) => void) {
+    const cb = (e: Event) => {
       e.stopPropagation()
       if (e.target instanceof HTMLElement) {
         const closestNote = e.target.closest('article')
         const id = closestNote?.getAttribute('data-noteid')
         if (id) {
-          console.log(new Error().stack)
-          handler(id)
+          return handler(id)
         }
       }
-    })
+    }
+    const notesListContainer = document.querySelector('.notes__container-notes')
+    notesListContainer?.addEventListener('click', cb)
+    return () => notesListContainer?.removeEventListener('click', cb)
   }
+
+  #addEventHandlers(handler: () => void) {}
 
   #hideCreateNewNoteButton() {
     document.querySelector('.add-new-note')?.classList.add('hide')
@@ -44,16 +63,6 @@ class NotesView extends Note<Notetype[]> {
 
   #showCreateNewNoteButton() {
     document.querySelector('.add-new-note')?.classList.remove('hide')
-  }
-
-  addHandlerForNewNote(handler: (notebookIdToAdd?: string) => void) {
-    document.querySelector('.add-new-note')?.addEventListener('click', () => {
-      if (this.#notebookId) {
-        handler(this.#notebookId)
-      } else {
-        handler()
-      }
-    })
   }
 
   #addActiveClassToNote(id: string) {
