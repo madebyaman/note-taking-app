@@ -29,7 +29,8 @@ Notebook Container
 }
 
 .notebook__container .notes button,
-.notebooks-section__heading {
+.notebooks-section__heading,
+.notebooks-section form {
   padding-left: 20px;
   padding-right: 20px;
 }
@@ -83,10 +84,6 @@ li.notebook {
   display: none;
 }
 
-.notebooks-section.hide .notebooks__icon svg {
-  transform: rotate(180deg);
-}
-
 .notebooks-section__heading {
   display: flex;
   align-items: center;
@@ -108,16 +105,20 @@ li.notebook {
   margin-top: 0;
 }
 
-.new-notebook-input {
-  margin: 10px 20px 0 20px;
-  width: auto;
+.notebooks-section input {
   border-radius: 2px;
   border: 0px;
   color: inherit;
-  background-color: hsl(206, 4%, 39%);
+  background-color: inherit;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  border-bottom: 1px solid;
+  outline: none;
+  padding: 5px 10px;
 }
 
-.new-notebook-input.hide {
+.add-notebook__form.hide {
   display: none;
 }
 
@@ -149,4 +150,20 @@ li.notebook {
 
 ul.note-books {
   margin-top: 15px;
+}
+
+.hide-notebooks-button-icon {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.notebooks-section.hide-notebooks {
+  ul.note-books {
+    display: none;
+  }
+
+   svg{
+    transform: rotate(180deg);
+  }
 }
