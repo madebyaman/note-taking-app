@@ -25,9 +25,9 @@ class NoteView extends Note<NoteType> {
       notebookId: string | undefined
     ) => void
   ) {
-    const selectedOption = document.querySelector(
-      `option[value="${this._data?.notebookId}"]`
-    )
+    const selectedOption = this._data?.notebookId
+      ? document.querySelector(`option[value="${this._data?.notebookId}"]`)
+      : null
     if (selectedOption && selectedOption instanceof HTMLOptionElement) {
       selectedOption.selected = true
     }
@@ -37,7 +37,11 @@ class NoteView extends Note<NoteType> {
         if (!this._data) return console.error('No data passed')
         const selectEl = document.getElementById('change-category')
         if (selectEl) {
-          saveHandler(this._data?.text || '', this._data.id, selectEl.value)
+          saveHandler(
+            this._data?.text || '',
+            this._data.id,
+            selectEl.value || undefined
+          )
         }
       })
     }
@@ -108,7 +112,7 @@ class NoteView extends Note<NoteType> {
       })
       .join('')
     const selectEl = document.getElementById('change-category')
-    if (selectEl) selectEl.innerHTML = markup
+    if (selectEl) selectEl.insertAdjacentHTML('afterbegin', markup)
   }
 
   #renderIcons() {
@@ -151,8 +155,9 @@ class NoteView extends Note<NoteType> {
             </button>
             </div>
             <div class="flex">
-              <label for="select-category">Category:</label>
+              <label for="select-category">Notebook:</label>
               <select id="change-category">
+              <option value="">Select a notebook</option>
               </select>
               <button class="save-note-button">Save</button>
             </div>
