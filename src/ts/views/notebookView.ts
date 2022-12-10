@@ -53,7 +53,7 @@ class NotebookView extends Note<Notebook[]> {
   }
 
   // Add new notebook logic
-  addEventHandlerToAddNotebookButton(handler: (name: string) => void): void {
+  addEventHandlerToAddNotebookButton(handler: (name?: string) => void): void {
     const addButton = document.querySelector('button.add-notebook')
     if (addButton && addButton instanceof HTMLButtonElement) {
       addButton.addEventListener('click', () => {
@@ -67,7 +67,7 @@ class NotebookView extends Note<Notebook[]> {
   }
 
   #generateAddNotebookFormMarkup(
-    handler: (name: string) => void
+    handler: (name?: string) => void
   ): HTMLFormElement {
     const form = document.createElement('form')
     form.classList.add('add-notebook__form')
@@ -78,12 +78,22 @@ class NotebookView extends Note<Notebook[]> {
     input.placeholder = 'Notebook Name'
     input.focus()
     form.appendChild(input)
-    form.addEventListener('submit', (e) => {
+    function handleFormSubmit(e: SubmitEvent) {
+      form.removeEventListener('submit', handleFormSubmit)
       e.preventDefault()
       handler(input.value)
       input.value = ''
       form.remove()
-    })
+    }
+    form.addEventListener('submit', handleFormSubmit)
+    function handleFormEscape(e: KeyboardEvent) {
+      form.removeEventListener('keydown', handleFormEscape)
+      if (e.key === 'Escape') {
+        handler()
+        form.remove()
+      }
+    }
+    form.addEventListener('keydown', handleFormEscape)
     return form
   }
 
@@ -123,13 +133,29 @@ class NotebookView extends Note<Notebook[]> {
     input.classList.add('notebook__name-input')
     input.value = val || ''
     form.appendChild(input)
-    form.addEventListener('submit', (e) => {
+    function handleFormSubmit(e: SubmitEvent) {
+      form.removeEventListener('submit', handleFormSubmit)
       e.preventDefault()
       e.stopPropagation()
+      if (!li) return
       const id = li.getAttribute('data-notebookid')
       if (!id) return
+      form.remove()
       handler(input.value, id)
-    })
+    }
+    form.addEventListener('submit', handleFormSubmit)
+    function handleFormEscape(e: KeyboardEvent) {
+      form.removeEventListener('keydown', handleFormEscape)
+      if (e.key === 'Escape') {
+        form.remove()
+        if (!li) return
+        const id = li.getAttribute('data-notebookid')
+        if (val && id) {
+          handler(val, id)
+        }
+      }
+    }
+    form.addEventListener('keydown', handleFormEscape)
     li.insertAdjacentElement('beforebegin', form)
   }
 

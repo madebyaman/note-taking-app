@@ -266,7 +266,8 @@ function deleteNotebookController(id: string) {
 }
 
 // Add new notebook, and move to its page
-function newNotebookController(name: string) {
+function newNotebookController(name?: string) {
+  if (!name) return
   const id = addNewNotebook(name)
   notebookController(id)
 }

@@ -179,6 +179,7 @@ export function addNewNotebook(name: string): string {
   }
 
   state.notebooks.push(newNotebook)
+  saveToLocalStorage()
   return newNotebook.id
 }
 
