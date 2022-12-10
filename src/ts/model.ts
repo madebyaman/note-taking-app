@@ -123,11 +123,11 @@ export function deleteNote(id: string) {
 }
 
 export function showFavoriteNotes() {
-  return state.notes.filter((note) => note.favorite)
+  return state.notes.filter((note) => note.favorite && !note.inTrash)
 }
 
 export function showNotesFromNotebook(id: string) {
-  return state.notes.filter((note) => note.notebookId === id)
+  return state.notes.filter((note) => note.notebookId === id && !note.inTrash)
 }
 
 export function renameNotebook(name: string, id: string) {
