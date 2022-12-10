@@ -28,7 +28,6 @@ class NotebookView extends Note<Notebook[]> {
   }
 
   render(data: Notebook[], activeNotebook?: string) {
-    this.#hideNotebooks()
     if (!data.length) {
       this._clear()
       this.#addActiveClass(activeNotebook)
@@ -44,12 +43,13 @@ class NotebookView extends Note<Notebook[]> {
   /**
    * Hide Notebooks
    */
-  #hideNotebooks() {
+  hideNotebooks() {
     const button = document.querySelector('.hide-notebooks-button-icon')
     const notebookSection = document.querySelector('.notebooks-section')
-    button?.addEventListener('click', () => {
+    function handleNotebookSectionClick() {
       notebookSection?.classList.toggle('hide-notebooks')
-    })
+    }
+    button?.addEventListener('click', handleNotebookSectionClick)
   }
 
   // Add new notebook logic

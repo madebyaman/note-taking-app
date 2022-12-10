@@ -205,6 +205,7 @@ function init(): void {
     renameHandler: renameNotebookController,
     openHandler: notebookController,
   })
+  notebookView.hideNotebooks()
   window.addEventListener('beforeunload', () => {
     if (removeSearch) removeSearch()
     if (removeOpenNoteListener) removeOpenNoteListener()
