@@ -209,7 +209,7 @@ export function checkIfNotebookIdValid(id: string) {
 }
 
 export function checkIfNoteIdValid(id: string): boolean {
-  return state.notes.some((note) => note.id === id)
+  return state.notes.some((note) => note.id === id && !note.inTrash)
 }
 
 export function changeCategoryOfNote(

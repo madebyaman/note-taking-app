@@ -106,11 +106,11 @@ function refreshViews(): void {
     ifNoteUrlInvalid(note)
     notebookView.render(state.notebooks, 'all')
     notesView.render({ notes: state.notes, activeNoteId: note })
-    showNote({ type: 'RENDER_PREVIEW', id: note, notes: state.notes })
+    showNote({ type: 'RENDER_PREVIEW', id: note, notes: showAllNotes() })
   } else {
     // Render home view
     notebookView.render(state.notebooks)
-    notesView.render({ notes: state.notes })
+    notesView.render({ notes: showAllNotes() })
     showNote({ type: 'RENDER_EMPTY' })
   }
 }
